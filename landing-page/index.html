@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rephraser - AI Text Rephrasing for macOS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <h1 class="text-6xl font-bold text-gray-900 mb-4">Rephraser</h1>
+            <p class="text-xl text-gray-600 mb-8">Instantly rephrase text in any app with AI</p>
+            
+            <!-- Download Button -->
+            <div class="flex flex-col items-center gap-4">
+                <a href="Rephraser.zip" 
+                   download
+                   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg shadow-lg transition-all transform hover:scale-105 inline-flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Download for macOS (Apple Silicon)
+                </a>
+                <p class="text-sm text-gray-500">Free • Version 0.1.0 • 4.4 MB</p>
+            </div>
+        </div>
+
+        <!-- Demo Video/GIF Placeholder -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-16">
+            <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                <div class="text-center">
+                    <p class="text-gray-400 text-lg">Demo Video Coming Soon</p>
+                    <p class="text-gray-300 text-sm mt-2">See Rephraser in action</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">How It Works</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl font-bold text-blue-600">1</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Select Text</h3>
+                    <p class="text-gray-600">Highlight any text in any app, or press Cmd+A to select all</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl font-bold text-blue-600">2</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Press Cmd+Shift+R</h3>
+                    <p class="text-gray-600">Window pops up above your text with rephrased version</p>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-lg">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <span class="text-2xl font-bold text-blue-600">3</span>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Copy & Use</h3>
+                    <p class="text-gray-600">Press Cmd+C to copy and close, then paste wherever you need</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Features</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">System-Wide</h3>
+                        <p class="text-gray-600">Works in any application - email, Slack, documents, anywhere</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">3 Styles</h3>
+                        <p class="text-gray-600">Professional, Casual, and Sarcasm modes for any context</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">Lightning Fast</h3>
+                        <p class="text-gray-600">Sub-second response time with optimized AI</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">Privacy First</h3>
+                        <p class="text-gray-600">No data logging, text never stored</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">Smart Positioning</h3>
+                        <p class="text-gray-600">Appears on your active screen, never goes off-screen</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">One-Click Dismiss</h3>
+                        <p class="text-gray-600">Cmd+C copies result and closes window instantly</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">See It in Action</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <div class="text-sm font-semibold text-gray-500 mb-2">Original (Casual)</div>
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <p class="text-gray-700">hey can we push this to next week im swamped</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-sm font-semibold text-blue-600 mb-2">Professional Style</div>
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <p class="text-gray-900">Would it be possible to reschedule this for next week? I'm currently managing several urgent priorities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation -->
+        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-16">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Installation</h2>
+            <ol class="space-y-4 text-gray-700">
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">1</span>
+                    <span><strong>Download</strong> Rephraser.zip</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">2</span>
+                    <span><strong>Extract</strong> and drag Rephraser.app to Applications</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">3</span>
+                    <span><strong>Right-click</strong> → Open (to bypass macOS warning)</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">4</span>
+                    <span><strong>Grant accessibility permissions</strong> when prompted</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">5</span>
+                    <span><strong>Done!</strong> Press Cmd+Shift+R on any selected text</span>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-600">
+            <p class="mb-2">Made for macOS (Apple Silicon)</p>
+            <p class="text-sm">Beta v0.1.0 - Free to use</p>
+        </div>
+    </div>
+</body>
+</html>
+
