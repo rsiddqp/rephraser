@@ -6,7 +6,7 @@
 - **Beta Launch**: 2026-01-07 (Week 7)
 - **Public Launch**: 2026-01-14 (Week 8)
 
-## Current Status: 🟢 Production-Ready - Deployment Strategy Defined
+## Current Status: 🎉 FULLY DEPLOYED AND PUBLIC - Ready for Users!
 
 ### Phase 1: Foundation (Week 1) - ✅ COMPLETED
 **Goal**: Set up development environment and core infrastructure
@@ -157,9 +157,12 @@
   - [x] Resources directory configuration
   - [x] Auto-load bundled config on first launch
   - [x] Multiple packaging options documented
-- [ ] Code signing (deferred for testing phase)
-  - [ ] Apple Developer certificate
-  - [ ] Windows code signing certificate
+- [x] Code signing (ad-hoc signing implemented)
+  - [x] Ad-hoc signing (no Apple Developer account needed)
+  - [x] build-and-sign.sh script created
+  - [x] Production app signed and deployed to landing page
+  - [ ] Full Apple Developer certificate (deferred - $99/year)
+  - [ ] Windows code signing certificate (deferred)
 - [x] Installers
   - [x] macOS .dmg creation working
   - [ ] Windows .msi creation (pending Windows testing)

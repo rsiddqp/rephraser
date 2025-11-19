@@ -1,10 +1,26 @@
 # Active Context: Rephraser
 
 ## Current Status
-**Phase**: Production-Ready - Deployment Package Complete
-**Last Updated**: 2025-11-19
-**Quality**: Senior architect reviewed
-**Deployment**: Backend proxy ready, landing page ready, awaiting user account setup
+**Phase**: ✅ FULLY DEPLOYED - PUBLIC AND LIVE (AD-HOC SIGNED)
+**Last Updated**: 2025-11-19 (5:30 PM EST)
+**Quality**: Production-ready, ad-hoc signed for better macOS compatibility
+
+**🌐 Public URLs**:
+  - Landing Page: https://rsiddqp.github.io/rephraser-landing (✅ LIVE)
+  - Download: https://rsiddqp.github.io/rephraser-landing/Rephraser.zip (✅ WORKING)
+  - Backend API: https://rephraser-9ur5.onrender.com (✅ tested, working)
+  
+**📦 Download**: 
+  - ✅ Working download via GitHub Pages
+  - File: Rephraser.zip (4.4 MB)
+  - Direct link: https://rsiddqp.github.io/rephraser-landing/Rephraser.zip
+  - **FIX APPLIED**: Changed from GitHub Releases to local GitHub Pages hosting
+
+**GitHub Repos**: 
+  - Main code: https://github.com/rsiddqp/rephraser
+  - Landing page: https://github.com/rsiddqp/rephraser-landing
+  
+**Status**: ✅ Ready for public use - share the landing page URL!
 
 ## Current Task
 The core MVP implementation is complete with CRITICAL automatic text selection capture implemented. The application now has the truly seamless workflow: SELECT text → hit Control+Space+R → get revised text. **No manual copying required!** All major components have been implemented:
@@ -101,18 +117,31 @@ The core MVP implementation is complete with CRITICAL automatic text selection c
    - Resets UI state for next use
    - Ultra-fast workflow: select → hotkey → review → copy → continue working
 
-10. **PUBLIC DEPLOYMENT PREPARATION** (2025-11-19):
-   - Created backend-proxy/ with secure API proxy server (Express.js)
-   - Rate limiting: 20 requests/min per IP
-   - Error handling for all OpenAI API responses
-   - Dynamic token calculation
-   - Ready-to-deploy configs for Render, Railway, and Vercel
-   - Created landing page (landing-page/index.html) with Tailwind CSS
-   - Automated packaging script (package-for-testing.sh)
-   - Complete deployment guides created (DEPLOY_NOW.md, QUICK_DEPLOY.md)
-   - Git repository initialized and code committed
-
-11. **Build Verification**: Frontend builds successfully (209KB gzipped), Backend proxy ready
+10. **PUBLIC DEPLOYMENT COMPLETED** (2025-11-19):
+   - ✅ Backend proxy DEPLOYED and LIVE at https://rephraser-9ur5.onrender.com
+   - ✅ GitHub repository created: https://github.com/rsiddqp/rephraser
+   - ✅ Modified app to use proxy server (API key never exposed to users)
+   - ✅ Removed API key requirement from app (handled server-side)
+   - ✅ Production app rebuilt with proxy integration
+   - ✅ Rate limiting: 20 requests/min per IP (server-side)
+   - ✅ Free tier deployment on Render.com
+   - ✅ Tested and verified: Proxy working correctly
+   - Landing page ready at landing-page/index.html
+   - Production ZIP ready for download
+   
+11. **AD-HOC CODE SIGNING IMPLEMENTED** (2025-11-19):
+   - ✅ Created build-and-sign.sh script for automated signing
+   - ✅ App now ad-hoc signed (no Apple Developer account needed)
+   - ✅ Reduces macOS Gatekeeper friction for users
+   - ✅ Signed app deployed to landing page
+   - ✅ Updated installation instructions on landing page
+   - Users can now right-click → Open (no terminal commands for most users)
+   - Better UX than unsigned version
+   
+11. **Build Verification**: 
+   - Frontend: 209KB gzipped ✅
+   - Backend proxy: LIVE at Render ✅
+   - Production app: Built and ready ✅
 
 ## Next Steps
 
