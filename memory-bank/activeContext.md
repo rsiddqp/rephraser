@@ -1,9 +1,9 @@
 # Active Context: Rephraser
 
 ## Current Status
-**Phase**: ✅ FULLY DEPLOYED - MULTI-MODEL SUPPORT ADDED
-**Last Updated**: 2025-11-21
-**Quality**: Production-ready with universal LLM support (OpenAI, Claude, Gemini, Perplexity)
+**Phase**: ✅ PRODUCTION - ROBUST MULTI-MODEL IMPLEMENTATION
+**Last Updated**: 2025-11-21 (Evening)
+**Quality**: Production-ready with verified API integrations (Proxy, OpenAI, Claude, Gemini, Perplexity)
 
 **🌐 Public URLs**:
   - Landing Page: https://rsiddqp.github.io/rephraser-landing (✅ LIVE)
@@ -26,14 +26,21 @@
 The application has been enhanced with **universal multi-model LLM support**. Users can now choose from multiple AI providers and use their own API keys. The workflow remains seamless: SELECT text → hit Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) → get revised text. **No manual copying required!**
 
 ### Latest Enhancements (2025-11-21)
-- ✅ Universal multi-model support (OpenAI, Claude, Gemini, Perplexity)
-- ✅ Users provide their own API keys (no proxy server needed)
-- ✅ Settings UI updated with model provider selection
-- ✅ Corrected hotkey display (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)
-- ✅ AI module refactored to support all major LLM providers
-- ✅ Configuration updated with model_provider field
-- ✅ All documentation cleaned up (removed 18 unnecessary markdown files)
-- ✅ README updated with multi-model information
+- ✅ **Hybrid approach**: Proxy server as DEFAULT + optional custom API keys
+- ✅ **Robust config loading**: Fresh config loaded on every rephrase (no stale state)
+- ✅ **Verified API implementations**:
+  - Proxy Server: `https://rephraser-9ur5.onrender.com` (default, tested ✅)
+  - OpenAI: `gpt-4o-mini` model (tested ✅)
+  - Anthropic: `claude-3-5-sonnet-20241022` model with proper headers
+  - Google: `gemini-pro` model
+  - Perplexity: `sonar` model (tested ✅, fixed from invalid model name)
+- ✅ **Preamble stripping**: All providers strip unwanted intro text ("Certainly. Here is...")
+- ✅ **Comprehensive logging**: All APIs log: 🤖→📤→📥→✅→✂️
+- ✅ **Settings UI**: Only shows API key field when needed, green indicator for proxy mode
+- ✅ **Hotkey display**: Corrected to "Cmd + Shift + R" visual badges
+- ✅ **Code cleanup**: Removed Popup.tsx (unused), cleaned appStore (removed 152 lines)
+- ✅ **Documentation**: Removed all temporary markdown files
+- ✅ **Keyboard shortcut**: Auto-unregisters before re-registering (fixes conflicts)
 
 ## Recent Developments
 1. **Memory Bank Created**: Complete documentation structure established
