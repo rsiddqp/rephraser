@@ -35,6 +35,7 @@ async fn rephrase_with_proxy(
     text: &str,
     style: &Style,
 ) -> Result<String, Box<dyn std::error::Error>> {
+    eprintln!("🌐 Using proxy server for rephrasing");
     let client = Client::new();
     
     const PROXY_URL: &str = "https://rephraser-9ur5.onrender.com/api/rephrase";
@@ -44,6 +45,8 @@ async fn rephrase_with_proxy(
         Style::Casual => "casual",
         Style::Sarcasm => "sarcasm",
     };
+    
+    eprintln!("📤 Sending request to proxy: style={}, text_len={}", style_str, text.len());
     
     #[derive(Serialize)]
     struct ProxyRequest {
@@ -68,13 +71,22 @@ async fn rephrase_with_proxy(
         .timeout(std::time::Duration::from_secs(60))
         .send()
         .await
-        .map_err(|e| handle_request_error(e))?;
+        .map_err(|e| {
+            eprintln!("❌ Proxy request failed: {:?}", e);
+            handle_request_error(e)
+        })?;
     
-    if !response.status().is_success() {
-        return Err(handle_api_error(response.status().as_u16(), "Proxy Server").into());
+    let status = response.status();
+    eprintln!("📥 Proxy response status: {}", status);
+    
+    if !status.is_success() {
+        let error = handle_api_error(status.as_u16(), "Proxy Server");
+        eprintln!("❌ Proxy error: {}", error);
+        return Err(error.into());
     }
     
     let data: ProxyResponse = response.json().await?;
+    eprintln!("✅ Proxy rephrase successful, result_len={}", data.rephrased.len());
     
     Ok(data.rephrased.trim().to_string())
 }

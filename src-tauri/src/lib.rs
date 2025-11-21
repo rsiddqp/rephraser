@@ -33,6 +33,8 @@ async fn rephrase_text(
     provider: String,
     api_key: String,
 ) -> Result<String, String> {
+    eprintln!("🔄 Rephrase request: provider={}, style={:?}, text_len={}", provider, style, text.len());
+    
     // Validate text length
     const MAX_TEXT_LENGTH: usize = 10000; // ~2500 tokens
     if text.len() > MAX_TEXT_LENGTH {
@@ -45,12 +47,21 @@ async fn rephrase_text(
     
     // Only require API key if not using proxy server
     if provider != "proxy" && api_key.trim().is_empty() {
+        eprintln!("❌ API key required for provider: {}", provider);
         return Err("API key is required for custom providers. Please configure it in Settings or use the default (Proxy Server).".to_string());
     }
     
-    ai::rephrase_text(&text, &style, &provider, &api_key)
-        .await
-        .map_err(|e| e.to_string())
+    eprintln!("✅ Calling AI module with provider: {}", provider);
+    match ai::rephrase_text(&text, &style, &provider, &api_key).await {
+        Ok(result) => {
+            eprintln!("✅ Rephrase successful, result_len={}", result.len());
+            Ok(result)
+        }
+        Err(e) => {
+            eprintln!("❌ Rephrase failed: {}", e);
+            Err(e.to_string())
+        }
+    }
 }
 
 #[tauri::command]
@@ -287,16 +298,29 @@ pub fn run() {
             #[cfg(debug_assertions)]
             println!("Rephraser started successfully in development mode!");
             
-            // Check if config exists, if not create with bundled default
-            if let Err(_) = config::load() {
-                // Try to load bundled default config for testing
-                if let Some(resource_path) = app.path().resource_dir().ok() {
-                    let bundled_config = resource_path.join("default-config.json");
-                    if bundled_config.exists() {
-                        if let Ok(content) = std::fs::read_to_string(&bundled_config) {
-                            if let Ok(default_config) = serde_json::from_str::<config::AppConfig>(&content) {
-                                let _ = config::save(&default_config);
-                                println!("✅ Loaded bundled API key for testing");
+            // Ensure config exists with proper defaults
+            match config::load() {
+                Ok(cfg) => {
+                    println!("✅ Config loaded: provider={}", cfg.model_provider);
+                }
+                Err(_) => {
+                    // No config exists, create default one
+                    let default_config = config::AppConfig::default();
+                    if let Err(e) = config::save(&default_config) {
+                        eprintln!("⚠️  Failed to save default config: {}", e);
+                    } else {
+                        println!("✅ Created default config with proxy provider");
+                    }
+                    
+                    // Try to load bundled config if it exists (for development)
+                    if let Some(resource_path) = app.path().resource_dir().ok() {
+                        let bundled_config = resource_path.join("default-config.json");
+                        if bundled_config.exists() {
+                            if let Ok(content) = std::fs::read_to_string(&bundled_config) {
+                                if let Ok(bundled) = serde_json::from_str::<config::AppConfig>(&content) {
+                                    let _ = config::save(&bundled);
+                                    println!("✅ Loaded bundled config for testing");
+                                }
                             }
                         }
                     }

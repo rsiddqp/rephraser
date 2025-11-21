@@ -14,10 +14,9 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [apiKey, setApiKey] = useState('');
+  const [modelProvider, setModelProvider] = useState('proxy'); // Default to proxy
   
   const rephrasedSectionRef = useRef<HTMLDivElement>(null);
-
-  const [modelProvider, setModelProvider] = useState('openai');
 
   const handleRephrase = async () => {
     const trimmedText = inputText.trim();
@@ -128,9 +127,8 @@ function App() {
       if (config.api_key) {
         setApiKey(config.api_key);
       }
-      if (config.model_provider) {
-        setModelProvider(config.model_provider);
-      }
+      // Always set model provider, default to proxy if not set
+      setModelProvider(config.model_provider || 'proxy');
       
       // Register global hotkey - try multiple formats
       const hotkeyOptions = [

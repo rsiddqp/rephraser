@@ -10,13 +10,13 @@ interface SettingsProps {
 const Settings = ({ onClose }: SettingsProps) => {
   const { config, setConfig } = useStore();
   const [apiKey, setApiKey] = useState(config?.api_key || '');
-  const [modelProvider, setModelProvider] = useState(config?.model_provider || 'openai');
+  const [modelProvider, setModelProvider] = useState(config?.model_provider || 'proxy'); // Default to proxy
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (config) {
       setApiKey(config.api_key || '');
-      setModelProvider(config.model_provider || 'openai');
+      setModelProvider(config.model_provider || 'proxy'); // Default to proxy
     }
   }, [config]);
 
@@ -152,26 +152,26 @@ const Settings = ({ onClose }: SettingsProps) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {getProviderName()} API Key (Optional)
-              </label>
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+            </label>
+            <input
+              type="password"
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
                 placeholder={getApiKeyPlaceholder()}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                Get your API key from{' '}
-                <a
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Get your API key from{' '}
+              <a
                   href={getApiKeyLink()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-500 hover:underline"
+              >
                   {getProviderName()} Platform
-                </a>
-              </p>
-            </div>
+              </a>
+            </p>
+          </div>
           )}
           
           {modelProvider === 'proxy' && (

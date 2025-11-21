@@ -288,7 +288,7 @@ windows = { version = "0.52", features = ["Win32_UI_Accessibility", "Win32_UI_In
 import { invoke } from '@tauri-apps/api';
 
 export async function rephraseText(
-  text: string,
+  text: string, 
   style: 'professional' | 'casual' | 'sarcasm',
   provider: string,
   apiKey: string
