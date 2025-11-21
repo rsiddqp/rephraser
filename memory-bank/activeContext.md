@@ -1,9 +1,9 @@
 # Active Context: Rephraser
 
 ## Current Status
-**Phase**: ✅ FULLY DEPLOYED - PUBLIC AND LIVE (AD-HOC SIGNED)
-**Last Updated**: 2025-11-19 (5:30 PM EST)
-**Quality**: Production-ready, ad-hoc signed for better macOS compatibility
+**Phase**: ✅ FULLY DEPLOYED - MULTI-MODEL SUPPORT ADDED
+**Last Updated**: 2025-11-21
+**Quality**: Production-ready with universal LLM support (OpenAI, Claude, Gemini, Perplexity)
 
 **🌐 Public URLs**:
   - Landing Page: https://rsiddqp.github.io/rephraser-landing (✅ LIVE)
@@ -23,14 +23,17 @@
 **Status**: ✅ Ready for public use - share the landing page URL!
 
 ## Current Task
-The core MVP implementation is complete with CRITICAL automatic text selection capture implemented. The application now has the truly seamless workflow: SELECT text → hit Control+Space+R → get revised text. **No manual copying required!** All major components have been implemented:
-- ✅ Rust backend with hotkey listener, AI integration, and clipboard operations
-- ✅ React UI with popup, style selector, and text preview
-- ✅ OpenAI API integration for text rephrasing
-- ✅ Configuration management system
-- ✅ Global keyboard shortcut registration (Control+Space+R)
-- ✅ Automatic text capture from clipboard when hotkey is pressed
-- ✅ Frontend builds successfully
+The application has been enhanced with **universal multi-model LLM support**. Users can now choose from multiple AI providers and use their own API keys. The workflow remains seamless: SELECT text → hit Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) → get revised text. **No manual copying required!**
+
+### Latest Enhancements (2025-11-21)
+- ✅ Universal multi-model support (OpenAI, Claude, Gemini, Perplexity)
+- ✅ Users provide their own API keys (no proxy server needed)
+- ✅ Settings UI updated with model provider selection
+- ✅ Corrected hotkey display (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)
+- ✅ AI module refactored to support all major LLM providers
+- ✅ Configuration updated with model_provider field
+- ✅ All documentation cleaned up (removed 18 unnecessary markdown files)
+- ✅ README updated with multi-model information
 
 ## Recent Developments
 1. **Memory Bank Created**: Complete documentation structure established
@@ -186,21 +189,25 @@ The core MVP implementation is complete with CRITICAL automatic text selection c
 - **Trade-off**: Less mature ecosystem, but acceptable for our use case
 - **Alternative**: Electron if Tauri accessibility APIs prove insufficient
 
-### AI Provider: OpenAI GPT-4 Turbo (Primary)
-- **Why**: Best quality/latency balance, well-documented API
-- **Cost**: ~$0.002-0.01 per rephrase (acceptable)
-- **Fallback**: Anthropic Claude Sonnet if OpenAI unavailable
+### AI Provider: Universal Multi-Model Support
+- **Supported Models**:
+  - OpenAI GPT-4o-mini (fast, cost-effective)
+  - Anthropic Claude 3.5 Sonnet (high quality)
+  - Google Gemini Pro (balanced performance)
+  - Perplexity Llama 3.1 (alternative option)
+- **User Control**: Users choose their preferred provider and use their own API keys
+- **Extensible**: Easy to add new providers in the future
 
 ### Text Replacement Strategy: Accessibility API First
 - **Primary**: Direct text injection via accessibility APIs (fastest)
 - **Fallback**: Clipboard + paste simulation (most compatible)
 - **Last Resort**: Keystroke simulation (slowest but universal)
 
-### Hotkey Default: CommandOrControl+Shift+R (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows)
+### Hotkey Default: Cmd+Shift+R (Mac) / Ctrl+Shift+R (Windows)
+- **Display**: Now correctly shows "Cmd + Shift + R" in Settings UI
 - **Rationale**: Cross-platform compatible format, unlikely to conflict with existing shortcuts
-- **Configurable**: Users can change to custom combination
+- **Implementation**: Uses CommandOrControl+Shift+R format for registration
 - **Critical**: This hotkey is essential for the entire workflow - select text, hit Cmd+Shift+R, get rephrased result
-- **Implementation**: App tries multiple formats (CommandOrControl+Shift+R, Ctrl+Shift+R, Control+Space+R) to ensure compatibility
 
 ## Critical Considerations
 

@@ -17,19 +17,20 @@
         <!-- Header -->
         <div class="text-center mb-16">
             <h1 class="text-6xl font-bold text-gray-900 mb-4">Rephraser</h1>
-            <p class="text-xl text-gray-600 mb-8">Instantly rephrase text in any app with AI</p>
+            <p class="text-xl text-gray-600 mb-4">Instantly rephrase text in any app with AI</p>
+            <p class="text-lg text-blue-600 font-semibold mb-8">✨ Now with Multi-Model Support: OpenAI, Claude, Gemini & Perplexity</p>
             
             <!-- Download Button -->
             <div class="flex flex-col items-center gap-4">
-                <a href="Rephraser.zip" 
-                   download
-                   class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg shadow-lg transition-all transform hover:scale-105 inline-flex items-center gap-2">
+            <a href="./Rephraser.zip" 
+               download
+               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg shadow-lg transition-all transform hover:scale-105 inline-flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
                     Download for macOS (Apple Silicon)
                 </a>
-                <p class="text-sm text-gray-500">Free • Version 0.1.0 • 4.4 MB</p>
+                <p class="text-sm text-gray-500">Free • Version 0.1.0 • 4.3 MB • Updated Nov 21, 2024</p>
             </div>
         </div>
 
@@ -88,6 +89,20 @@
                     <div>
                         <h3 class="font-semibold text-gray-900 mb-1">System-Wide</h3>
                         <p class="text-gray-600">Works in any application - email, Slack, documents, anywhere</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-900 mb-1">Multiple AI Models</h3>
+                        <p class="text-gray-600">Choose from OpenAI, Claude, Gemini, or Perplexity</p>
                     </div>
                 </div>
 
@@ -188,25 +203,51 @@
             <ol class="space-y-4 text-gray-700">
                 <li class="flex gap-3">
                     <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">1</span>
-                    <span><strong>Download</strong> Rephraser.zip</span>
+                    <span><strong>Download</strong> Rephraser.zip and extract it</span>
                 </li>
                 <li class="flex gap-3">
                     <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">2</span>
-                    <span><strong>Extract</strong> and drag Rephraser.app to Applications</span>
+                    <span><strong>Move</strong> Rephraser.app to Applications folder (optional)</span>
                 </li>
                 <li class="flex gap-3">
                     <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">3</span>
-                    <span><strong>Right-click</strong> → Open (to bypass macOS warning)</span>
+                    <div>
+                        <strong>Open the app:</strong> Right-click (⌃+click) Rephraser.app → Select <strong>"Open"</strong>
+                        <div class="text-sm text-gray-500 mt-1">First time only: macOS requires right-click for apps not from the App Store</div>
+                    </div>
                 </li>
                 <li class="flex gap-3">
                     <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">4</span>
-                    <span><strong>Grant accessibility permissions</strong> when prompted</span>
+                    <span>Click <strong>"Open"</strong> when macOS asks for confirmation</span>
                 </li>
                 <li class="flex gap-3">
                     <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">5</span>
-                    <span><strong>Done!</strong> Press Cmd+Shift+R on any selected text</span>
+                    <span><strong>Grant accessibility permissions</strong> when prompted (System Preferences will open)</span>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">6</span>
+                    <div>
+                        <strong>Configure your AI model:</strong> Click the Settings (⚙️) icon
+                        <div class="text-sm text-gray-500 mt-1">Choose your AI provider (OpenAI, Claude, Gemini, or Perplexity) and enter your API key</div>
+                        <div class="text-sm text-gray-500">Get keys from: <a href="https://platform.openai.com/api-keys" class="text-blue-600 hover:underline" target="_blank">OpenAI</a>, <a href="https://console.anthropic.com/account/keys" class="text-blue-600 hover:underline" target="_blank">Anthropic</a>, <a href="https://makersuite.google.com/app/apikey" class="text-blue-600 hover:underline" target="_blank">Google</a>, or <a href="https://www.perplexity.ai/settings/api" class="text-blue-600 hover:underline" target="_blank">Perplexity</a></div>
+                    </div>
+                </li>
+                <li class="flex gap-3">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">7</span>
+                    <span><strong>Done!</strong> Select any text and press Cmd+Shift+R</span>
                 </li>
             </ol>
+            
+            <div class="mt-6 space-y-4">
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-400 text-sm text-gray-700">
+                    <p class="font-semibold mb-1">✨ This app is code-signed for your security</p>
+                    <p>Right-clicking → Open on first launch is a standard macOS security feature. After the first time, you can open normally!</p>
+                </div>
+                <div class="p-4 bg-purple-50 border-l-4 border-purple-400 text-sm text-gray-700">
+                    <p class="font-semibold mb-1">🔑 Your API Key, Your Choice</p>
+                    <p>Rephraser uses your own API key for maximum privacy and control. Choose from OpenAI, Anthropic Claude, Google Gemini, or Perplexity. Your key stays on your device and is never shared.</p>
+                </div>
+            </div>
         </div>
 
         <!-- Footer -->

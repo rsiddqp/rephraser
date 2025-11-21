@@ -6,7 +6,7 @@ export type StyleMode = 'professional' | 'casual' | 'sarcasm';
 interface AppConfig {
   hotkey: string;
   default_style: string;
-  api_provider: string;
+  model_provider: string;
   api_key?: string;
   theme: string;
   start_on_login: boolean;
@@ -85,6 +85,7 @@ export const useStore = create<AppState>((set, get) => ({
       const rephrased = await invoke<string>('rephrase_text', {
         text,
         style: currentStyle,
+        provider: config.model_provider || 'openai',
         apiKey: config.api_key,
       });
       

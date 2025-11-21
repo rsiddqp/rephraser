@@ -30,9 +30,10 @@ pub enum Style {
 async fn rephrase_text(
     text: String,
     style: Style,
+    provider: String,
     api_key: String,
 ) -> Result<String, String> {
-    // Validate text length (OpenAI has limits)
+    // Validate text length
     const MAX_TEXT_LENGTH: usize = 10000; // ~2500 tokens
     if text.len() > MAX_TEXT_LENGTH {
         return Err(format!("Text too long. Maximum {} characters allowed.", MAX_TEXT_LENGTH));
@@ -42,7 +43,11 @@ async fn rephrase_text(
         return Err("Text cannot be empty".to_string());
     }
     
-    ai::rephrase_with_openai(&text, &style, &api_key)
+    if api_key.trim().is_empty() {
+        return Err("API key is required. Please configure it in Settings.".to_string());
+    }
+    
+    ai::rephrase_text(&text, &style, &provider, &api_key)
         .await
         .map_err(|e| e.to_string())
 }

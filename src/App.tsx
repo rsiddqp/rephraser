@@ -17,6 +17,8 @@ function App() {
   
   const rephrasedSectionRef = useRef<HTMLDivElement>(null);
 
+  const [modelProvider, setModelProvider] = useState('openai');
+
   const handleRephrase = async () => {
     const trimmedText = inputText.trim();
     if (!trimmedText) {
@@ -31,7 +33,7 @@ function App() {
     }
 
     if (!apiKey) {
-      setError('Please configure your OpenAI API key in Settings');
+      setError('Please configure your API key in Settings');
       setShowSettings(true);
       return;
     }
@@ -43,6 +45,7 @@ function App() {
       const rephrased = await invoke<string>('rephrase_text', {
         text: trimmedText,
         style: currentStyle,
+        provider: modelProvider,
         apiKey: apiKey,
       });
 
@@ -124,6 +127,9 @@ function App() {
       if (config.api_key) {
         setApiKey(config.api_key);
       }
+      if (config.model_provider) {
+        setModelProvider(config.model_provider);
+      }
       
       // Register global hotkey - try multiple formats
       const hotkeyOptions = [
@@ -174,6 +180,7 @@ function App() {
                 const rephrased = await invoke<string>('rephrase_text', {
                   text,
                   style: currentStyle,
+                  provider: config.model_provider || 'openai',
                   apiKey: config.api_key,
                 });
                 setRephrasedText(rephrased);

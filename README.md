@@ -5,11 +5,13 @@ A lightweight, high-performance desktop application for macOS and Windows that l
 ## Features ✨
 
 - **System-Wide**: Works in any application where text can be selected
-- **Instant Access**: Global hotkey (`Control+Space+R`) triggers adaptive UI
+- **Instant Access**: Global hotkey (`Cmd+Shift+R` on Mac, `Ctrl+Shift+R` on Windows)
+- **Multiple AI Models**: Choose from OpenAI, Claude, Gemini, or Perplexity
 - **Multiple Styles**: Three modes for different contexts
   - **Professional**: Business-appropriate, formal tone
   - **Casual**: Friendly, conversational tone
   - **Sarcasm**: Witty, subtly sarcastic tone
+- **Universal API Support**: Use your own API key from any supported provider
 - **Seamless Integration**: Non-intrusive, appears only when needed
 - **Privacy-First**: No data storage, text never logged
 - **Cross-Platform**: Native support for macOS and Windows
@@ -19,7 +21,11 @@ A lightweight, high-performance desktop application for macOS and Windows that l
 ### Prerequisites
 - **macOS**: 10.15 (Catalina) or later
 - **Windows**: Windows 10 or later
-- **OpenAI API Key**: Get one from [OpenAI Platform](https://platform.openai.com/api-keys)
+- **API Key**: Get one from your preferred AI provider:
+  - [OpenAI](https://platform.openai.com/api-keys) - GPT-4o-mini
+  - [Anthropic](https://console.anthropic.com/account/keys) - Claude 3.5 Sonnet
+  - [Google](https://makersuite.google.com/app/apikey) - Gemini Pro
+  - [Perplexity](https://www.perplexity.ai/settings/api) - Llama 3.1
 
 ### Download
 Download the latest release for your platform:
@@ -29,13 +35,15 @@ Download the latest release for your platform:
 ### Setup
 1. Install the application
 2. Grant accessibility permissions when prompted (required for system-wide text access)
-3. Open Settings and enter your OpenAI API key
-4. You're ready to go!
+3. Open Settings (⚙️ icon)
+4. Select your preferred AI model provider
+5. Enter your API key
+6. You're ready to go!
 
 ## Usage 🚀
 
 1. **SELECT** any text in any application (highlight it or press Cmd+A)
-2. Press the keyboard shortcut: `Control+Space+R`
+2. Press the keyboard shortcut: `Cmd+Shift+R` (Mac) or `Ctrl+Shift+R` (Windows)
 3. The app will **automatically capture and rephrase** your selected text
 4. Review the rephrased text in the app
 5. **Copy** the result to use it, or click **Rephrase** to get a different version
@@ -61,7 +69,7 @@ Download the latest release for your platform:
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Tailwind CSS
 - **Backend**: Tauri (Rust)
-- **AI**: OpenAI GPT-4 Turbo
+- **AI Models**: OpenAI GPT-4o-mini, Claude 3.5 Sonnet, Gemini Pro, Perplexity Llama 3.1
 - **State**: Zustand
 
 ### Prerequisites
@@ -109,9 +117,10 @@ Settings are stored in:
 - **Windows**: `%APPDATA%/Rephraser/config.json`
 
 ### Available Settings
-- `hotkey`: Global shortcut (default: `Control+Space+R`)
-- `default_style`: Starting style mode
-- `api_key`: OpenAI API key (encrypted)
+- `hotkey`: Global shortcut (`Cmd+Shift+R` on Mac, `Ctrl+Shift+R` on Windows)
+- `model_provider`: AI model provider (openai, claude, gemini, perplexity)
+- `default_style`: Starting style mode (professional, casual, sarcasm)
+- `api_key`: Your API key (stored securely)
 - `theme`: UI theme (light/dark/system)
 
 ## Privacy & Security 🔒

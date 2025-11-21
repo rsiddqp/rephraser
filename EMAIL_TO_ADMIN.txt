@@ -1,0 +1,38 @@
+Subject: Request: Code Signing Certificate for macOS App Distribution
+
+Hi [Admin Name],
+
+I'm working on a macOS desktop application called "Rephraser" that's ready for distribution outside the Mac App Store. To provide a seamless user experience without security warnings, I need to code sign and notarize the app.
+
+Could you please provide the following:
+
+1. Developer ID Application Certificate
+   - Export as .p12 file with password
+   - Used for signing macOS apps for distribution outside the App Store
+
+2. Notarization Credentials
+   - Apple ID email associated with our Developer account
+   - App-specific password (not the main account password)
+   - Our Team ID (10-character identifier)
+
+3. Certificate Information
+   - The exact certificate name from Keychain (e.g., "Developer ID Application: Company Name (TEAM123)")
+
+These credentials will allow me to:
+- Sign the app so macOS recognizes it as legitimate
+- Notarize it with Apple's servers
+- Distribute it without "damaged" or "unidentified developer" warnings
+
+The app is fully functional but currently requires users to bypass macOS Gatekeeper warnings manually. Once signed and notarized, users can simply download and open it like any professional Mac app.
+
+Application Details:
+- Name: Rephraser
+- Bundle ID: com.rephraser.app
+- Type: Desktop utility for text rephrasing
+- Distribution: Direct download from landing page
+
+If you have any questions or need additional information, please let me know!
+
+Thanks,
+[Your Name]
+

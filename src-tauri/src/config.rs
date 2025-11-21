@@ -7,7 +7,7 @@ use std::path::PathBuf;
 pub struct AppConfig {
     pub hotkey: String,
     pub default_style: String,
-    pub api_provider: String,
+    pub model_provider: String, // openai, claude, gemini, perplexity
     pub api_key: Option<String>,
     pub theme: String,
     pub start_on_login: bool,
@@ -19,8 +19,8 @@ impl Default for AppConfig {
         Self {
             hotkey: "CommandOrControl+Shift+R".to_string(),
             default_style: "professional".to_string(),
-            api_provider: "openai".to_string(),
-            api_key: None,
+            model_provider: "openai".to_string(), // Default to OpenAI
+            api_key: None, // User must provide their own API key
             theme: "system".to_string(),
             start_on_login: false,
             auto_update: true,

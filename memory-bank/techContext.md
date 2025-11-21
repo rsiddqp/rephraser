@@ -45,26 +45,29 @@
 
 ### AI/ML Stack
 
-**Primary: API-Based**
-- **Provider**: OpenAI GPT-4 Turbo / Anthropic Claude Sonnet
-- **Client**: `reqwest` HTTP client (Rust) or `axios` (TypeScript)
-- **Endpoints**:
-  - OpenAI: `https://api.openai.com/v1/chat/completions`
-  - Anthropic: `https://api.anthropic.com/v1/messages`
-- **Rate Limiting**: Token bucket algorithm, user-tier based
-- **Caching**: In-memory LRU cache (5 min TTL)
+**Universal Multi-Model Support**
+- **Architecture**: Provider-agnostic AI module supporting multiple LLM APIs
+- **Supported Providers**:
+  - **OpenAI**: GPT-4o-mini via `https://api.openai.com/v1/chat/completions`
+  - **Anthropic**: Claude 3.5 Sonnet via `https://api.anthropic.com/v1/messages`
+  - **Google**: Gemini Pro via `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent`
+  - **Perplexity**: Llama 3.1 Sonar via `https://api.perplexity.ai/chat/completions`
+- **Client**: `reqwest` HTTP client (Rust)
+- **Authentication**: User-provided API keys (stored in config.json)
+- **Timeout**: 30 seconds for all providers
+- **Error Handling**: Provider-specific error messages for better UX
 
-**Fallback: Local Model**
-- **Model**: Gemma 2 2B (quantized to 4-bit)
-- **Runtime**: `llama.cpp` via Rust FFI or Node native addon
-- **Size**: ~1.5GB download (optional)
-- **Performance**: 10-30 tokens/sec on modern CPU
-- **Use Case**: Offline mode, privacy-focused users
+**Implementation Details**:
+- Single unified `rephrase_text()` function routes to provider-specific handlers
+- Style-specific prompts generated consistently across all providers
+- Standardized request/response structures for each API
+- Graceful error handling with user-friendly messages
+- Extensible design allows easy addition of new providers
 
-**Alternative APIs** (for cost optimization):
-- QuillBot API (if available)
-- Cohere API
-- Together.ai (cheaper inference)
+**Future Considerations**:
+- Local model support (deferred to Phase 3+)
+- Response caching for performance optimization
+- Rate limiting and cost tracking per user
 
 ## Development Environment
 
@@ -279,96 +282,63 @@ windows = { version = "0.52", features = ["Win32_UI_Accessibility", "Win32_UI_In
 
 ## API Integration
 
-### OpenAI Integration
+### Universal AI Integration
 ```typescript
-// src/services/aiService.ts
+// Frontend invocation - works with any provider
 import { invoke } from '@tauri-apps/api';
 
-export async function rephraseWithOpenAI(
-  text: string, 
-  style: 'professional' | 'casual' | 'sarcasm'
+export async function rephraseText(
+  text: string,
+  style: 'professional' | 'casual' | 'sarcasm',
+  provider: string,
+  apiKey: string
 ): Promise<string> {
-  // Call Rust backend to make API request (keeps API key secure)
   const result = await invoke<string>('rephrase_text', {
     text,
     style,
-    provider: 'openai'
+    provider, // 'openai', 'claude', 'gemini', 'perplexity'
+    apiKey
   });
   return result;
 }
 ```
 
 ```rust
-// src-tauri/src/ai/openai.rs
+// src-tauri/src/ai.rs - Universal AI module
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
+use crate::Style;
 
-#[derive(Serialize)]
-struct OpenAIRequest {
-    model: String,
-    messages: Vec<Message>,
-    temperature: f32,
-    max_tokens: u32,
-}
-
-#[derive(Serialize, Deserialize)]
-struct Message {
-    role: String,
-    content: String,
-}
-
-pub async fn rephrase(
-    api_key: &str,
+// Main entry point - routes to appropriate provider
+pub async fn rephrase_text(
     text: &str,
-    style: &str
+    style: &Style,
+    provider: &str,
+    api_key: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
-    let client = Client::new();
-    
-    let prompt = match style {
-        "professional" => format!(
-            "Rephrase this professionally: {}", text
-        ),
-        "casual" => format!(
-            "Rephrase this casually: {}", text
-        ),
-        "sarcasm" => format!(
-            "Rephrase this with subtle sarcasm: {}", text
-        ),
-        _ => text.to_string(),
-    };
-    
-    let request = OpenAIRequest {
-        model: "gpt-4-turbo-preview".to_string(),
-        messages: vec![
-            Message {
-                role: "system".to_string(),
-                content: "You are a writing assistant.".to_string(),
-            },
-            Message {
-                role: "user".to_string(),
-                content: prompt,
-            },
-        ],
-        temperature: 0.7,
-        max_tokens: 500,
-    };
-    
-    let response = client
-        .post("https://api.openai.com/v1/chat/completions")
-        .header("Authorization", format!("Bearer {}", api_key))
-        .json(&request)
-        .send()
-        .await?;
-    
-    let data: serde_json::Value = response.json().await?;
-    let rephrased = data["choices"][0]["message"]["content"]
-        .as_str()
-        .unwrap_or("")
-        .to_string();
-    
-    Ok(rephrased)
+    match provider.to_lowercase().as_str() {
+        "openai" => rephrase_with_openai(text, style, api_key).await,
+        "claude" | "anthropic" => rephrase_with_claude(text, style, api_key).await,
+        "gemini" | "google" => rephrase_with_gemini(text, style, api_key).await,
+        "perplexity" => rephrase_with_perplexity(text, style, api_key).await,
+        _ => Err(format!("Unsupported provider: {}", provider).into()),
+    }
 }
+
+// Provider-specific implementations handle API differences
+// Each follows the same pattern:
+// 1. Build provider-specific request structure
+// 2. Make HTTP request with appropriate headers/auth
+// 3. Parse provider-specific response format
+// 4. Return standardized string result
 ```
+
+### Key Design Principles:
+- **Separation of Concerns**: Each provider has its own implementation
+- **Consistent Interface**: All providers use the same function signature
+- **Error Handling**: Provider-specific error messages guide users
+- **Extensibility**: Adding new providers requires minimal code changes
+- **Security**: API keys never leave the Rust backend
 
 ## Coding Standards
 
