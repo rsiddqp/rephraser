@@ -4,14 +4,14 @@ A lightweight, high-performance desktop application for macOS and Windows that l
 
 ## Features ✨
 
+- **Ready Out of the Box**: Works immediately after installation - no API key setup required
 - **System-Wide**: Works in any application where text can be selected
 - **Instant Access**: Global hotkey (`Cmd+Shift+R` on Mac, `Ctrl+Shift+R` on Windows)
-- **Multiple AI Models**: Choose from OpenAI, Claude, Gemini, or Perplexity
 - **Multiple Styles**: Three modes for different contexts
   - **Professional**: Business-appropriate, formal tone
   - **Casual**: Friendly, conversational tone
   - **Sarcasm**: Witty, subtly sarcastic tone
-- **Universal API Support**: Use your own API key from any supported provider
+- **Optional Advanced Features**: Power users can configure their own OpenAI, Claude, Gemini, or Perplexity API keys
 - **Seamless Integration**: Non-intrusive, appears only when needed
 - **Privacy-First**: No data storage, text never logged
 - **Cross-Platform**: Native support for macOS and Windows
@@ -21,7 +21,8 @@ A lightweight, high-performance desktop application for macOS and Windows that l
 ### Prerequisites
 - **macOS**: 10.15 (Catalina) or later
 - **Windows**: Windows 10 or later
-- **API Key**: Get one from your preferred AI provider:
+- **No API Key Required**: Works out of the box with default proxy server
+- **Optional**: Advanced users can use their own API keys:
   - [OpenAI](https://platform.openai.com/api-keys) - GPT-4o-mini
   - [Anthropic](https://console.anthropic.com/account/keys) - Claude 3.5 Sonnet
   - [Google](https://makersuite.google.com/app/apikey) - Gemini Pro
@@ -35,10 +36,12 @@ Download the latest release for your platform:
 ### Setup
 1. Install the application
 2. Grant accessibility permissions when prompted (required for system-wide text access)
-3. Open Settings (⚙️ icon)
-4. Select your preferred AI model provider
-5. Enter your API key
-6. You're ready to go!
+3. **Done!** The app works immediately - select text and press `Cmd+Shift+R`
+
+**Optional - Advanced Users Only**:
+4. Open Settings (⚙️ icon) to configure your own AI model
+5. Select a custom provider (OpenAI, Claude, Gemini, or Perplexity)
+6. Enter your API key
 
 ## Usage 🚀
 
@@ -118,9 +121,11 @@ Settings are stored in:
 
 ### Available Settings
 - `hotkey`: Global shortcut (`Cmd+Shift+R` on Mac, `Ctrl+Shift+R` on Windows)
-- `model_provider`: AI model provider (openai, claude, gemini, perplexity)
+- `model_provider`: AI model provider
+  - `proxy` (default) - Works immediately, no API key required
+  - `openai`, `claude`, `gemini`, `perplexity` - Use your own API key
 - `default_style`: Starting style mode (professional, casual, sarcasm)
-- `api_key`: Your API key (stored securely)
+- `api_key`: Your API key (optional, only needed for custom providers)
 - `theme`: UI theme (light/dark/system)
 
 ## Privacy & Security 🔒
