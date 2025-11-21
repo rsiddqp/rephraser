@@ -64,7 +64,8 @@ export const useStore = create<AppState>((set, get) => ({
   rephrase: async () => {
     const { selectedText, currentStyle, config } = get();
     
-    if (!config?.api_key) {
+    // Only require API key if not using proxy
+    if (config?.model_provider !== 'proxy' && !config?.api_key) {
       set({ error: 'API key not configured' });
       return;
     }
@@ -85,8 +86,8 @@ export const useStore = create<AppState>((set, get) => ({
       const rephrased = await invoke<string>('rephrase_text', {
         text,
         style: currentStyle,
-        provider: config.model_provider || 'openai',
-        apiKey: config.api_key,
+        provider: config.model_provider || 'proxy',
+        apiKey: config.api_key || '',
       });
       
       set({ rephrasedText: rephrased, isLoading: false });

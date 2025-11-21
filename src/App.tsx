@@ -32,8 +32,9 @@ function App() {
       return;
     }
 
-    if (!apiKey) {
-      setError('Please configure your API key in Settings');
+    // Only require API key if not using proxy
+    if (modelProvider !== 'proxy' && !apiKey) {
+      setError('Please configure your API key in Settings or use the default Proxy Server');
       setShowSettings(true);
       return;
     }
@@ -172,16 +173,16 @@ function App() {
             setInputText(text);
             setError(null);
             
-            // Automatically trigger rephrase if API key exists
-            if (config.api_key) {
+            // Automatically trigger rephrase if using proxy or API key exists
+            if (config.model_provider === 'proxy' || config.api_key) {
               setIsLoading(true);
               
               try {
                 const rephrased = await invoke<string>('rephrase_text', {
                   text,
                   style: currentStyle,
-                  provider: config.model_provider || 'openai',
-                  apiKey: config.api_key,
+                  provider: config.model_provider || 'proxy',
+                  apiKey: config.api_key || '',
                 });
                 setRephrasedText(rephrased);
                 console.log('✅ Rephrasing complete!');
@@ -201,7 +202,7 @@ function App() {
                 setIsLoading(false);
               }
             } else {
-              setError('Please configure your OpenAI API key in Settings');
+              setError('Please configure your API key in Settings');
               setShowSettings(true);
             }
           } catch (e) {

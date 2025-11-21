@@ -19,8 +19,8 @@ impl Default for AppConfig {
         Self {
             hotkey: "CommandOrControl+Shift+R".to_string(),
             default_style: "professional".to_string(),
-            model_provider: "openai".to_string(), // Default to OpenAI
-            api_key: None, // User must provide their own API key
+            model_provider: "proxy".to_string(), // Default to proxy server (uses your API key)
+            api_key: None, // Optional: user can provide their own API key
             theme: "system".to_string(),
             start_on_login: false,
             auto_update: true,

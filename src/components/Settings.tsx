@@ -23,8 +23,9 @@ const Settings = ({ onClose }: SettingsProps) => {
   const handleSave = async () => {
     if (!config) return;
 
-    if (!apiKey.trim()) {
-      alert('Please enter an API key');
+    // Only require API key if not using proxy
+    if (modelProvider !== 'proxy' && !apiKey.trim()) {
+      alert('Please enter an API key for the selected provider, or use "Proxy Server (Default)" to use the app without your own API key.');
       return;
     }
 
@@ -49,6 +50,8 @@ const Settings = ({ onClose }: SettingsProps) => {
 
   const getApiKeyPlaceholder = () => {
     switch (modelProvider) {
+      case 'proxy':
+        return 'No API key needed (using default)';
       case 'openai':
         return 'sk-...';
       case 'claude':
@@ -66,6 +69,8 @@ const Settings = ({ onClose }: SettingsProps) => {
 
   const getApiKeyLink = () => {
     switch (modelProvider) {
+      case 'proxy':
+        return '#';
       case 'openai':
         return 'https://platform.openai.com/api-keys';
       case 'claude':
@@ -83,6 +88,8 @@ const Settings = ({ onClose }: SettingsProps) => {
 
   const getProviderName = () => {
     switch (modelProvider) {
+      case 'proxy':
+        return 'Proxy Server';
       case 'openai':
         return 'OpenAI';
       case 'claude':
@@ -123,44 +130,57 @@ const Settings = ({ onClose }: SettingsProps) => {
               value={modelProvider}
               onChange={(e) => {
                 setModelProvider(e.target.value);
-                setApiKey(''); // Clear API key when changing provider
+                if (e.target.value === 'proxy') {
+                  setApiKey(''); // Clear API key when switching to proxy
+                }
               }}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="openai">OpenAI (GPT-4o-mini)</option>
-              <option value="claude">Anthropic (Claude 3.5 Sonnet)</option>
-              <option value="gemini">Google (Gemini Pro)</option>
-              <option value="perplexity">Perplexity (Llama 3.1)</option>
+              <option value="proxy">Proxy Server (Default - No API key needed)</option>
+              <option value="openai">OpenAI (GPT-4o-mini) - Use your API key</option>
+              <option value="claude">Anthropic (Claude 3.5 Sonnet) - Use your API key</option>
+              <option value="gemini">Google (Gemini Pro) - Use your API key</option>
+              <option value="perplexity">Perplexity (Llama 3.1) - Use your API key</option>
             </select>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Choose which AI model to use for rephrasing
+              Default uses proxy server (free). Advanced users can use their own API keys.
             </p>
           </div>
 
           {/* API Key */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {getProviderName()} API Key
-            </label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              placeholder={getApiKeyPlaceholder()}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Get your API key from{' '}
-              <a
-                href={getApiKeyLink()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
-              >
-                {getProviderName()} Platform
-              </a>
-            </p>
-          </div>
+          {modelProvider !== 'proxy' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {getProviderName()} API Key (Optional)
+              </label>
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder={getApiKeyPlaceholder()}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                Get your API key from{' '}
+                <a
+                  href={getApiKeyLink()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  {getProviderName()} Platform
+                </a>
+              </p>
+            </div>
+          )}
+          
+          {modelProvider === 'proxy' && (
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <p className="text-sm text-green-800 dark:text-green-400">
+                ✅ <strong>Default mode active</strong> - No API key required. The app will work immediately!
+              </p>
+            </div>
+          )}
 
           {/* Hotkey Display */}
           <div>

@@ -11,6 +11,7 @@ pub async fn rephrase_text(
     api_key: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     match provider.to_lowercase().as_str() {
+        "proxy" => rephrase_with_proxy(text, style).await,
         "openai" => rephrase_with_openai(text, style, api_key).await,
         "claude" | "anthropic" => rephrase_with_claude(text, style, api_key).await,
         "gemini" | "google" => rephrase_with_gemini(text, style, api_key).await,
@@ -27,6 +28,55 @@ fn get_prompt_for_style(text: &str, style: &Style) -> String {
     };
     
     format!("{}\n\nText: {}", style_instruction, text)
+}
+
+// Proxy server integration (default - uses your API key)
+async fn rephrase_with_proxy(
+    text: &str,
+    style: &Style,
+) -> Result<String, Box<dyn std::error::Error>> {
+    let client = Client::new();
+    
+    const PROXY_URL: &str = "https://rephraser-9ur5.onrender.com/api/rephrase";
+    
+    let style_str = match style {
+        Style::Professional => "professional",
+        Style::Casual => "casual",
+        Style::Sarcasm => "sarcasm",
+    };
+    
+    #[derive(Serialize)]
+    struct ProxyRequest {
+        text: String,
+        style: String,
+    }
+    
+    #[derive(Deserialize)]
+    struct ProxyResponse {
+        rephrased: String,
+    }
+    
+    let request = ProxyRequest {
+        text: text.to_string(),
+        style: style_str.to_string(),
+    };
+    
+    let response = client
+        .post(PROXY_URL)
+        .header("Content-Type", "application/json")
+        .json(&request)
+        .timeout(std::time::Duration::from_secs(60))
+        .send()
+        .await
+        .map_err(|e| handle_request_error(e))?;
+    
+    if !response.status().is_success() {
+        return Err(handle_api_error(response.status().as_u16(), "Proxy Server").into());
+    }
+    
+    let data: ProxyResponse = response.json().await?;
+    
+    Ok(data.rephrased.trim().to_string())
 }
 
 // OpenAI GPT-4 integration

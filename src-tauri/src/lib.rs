@@ -43,8 +43,9 @@ async fn rephrase_text(
         return Err("Text cannot be empty".to_string());
     }
     
-    if api_key.trim().is_empty() {
-        return Err("API key is required. Please configure it in Settings.".to_string());
+    // Only require API key if not using proxy server
+    if provider != "proxy" && api_key.trim().is_empty() {
+        return Err("API key is required for custom providers. Please configure it in Settings or use the default (Proxy Server).".to_string());
     }
     
     ai::rephrase_text(&text, &style, &provider, &api_key)
