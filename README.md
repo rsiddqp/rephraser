@@ -26,7 +26,7 @@ A lightweight, high-performance desktop application for macOS and Windows that l
   - [OpenAI](https://platform.openai.com/api-keys) - GPT-4o-mini
   - [Anthropic](https://console.anthropic.com/account/keys) - Claude 3.5 Sonnet
   - [Google](https://makersuite.google.com/app/apikey) - Gemini Pro
-  - [Perplexity](https://www.perplexity.ai/settings/api) - Llama 3.1
+  - [Perplexity](https://www.perplexity.ai/settings/api) - Sonar
 
 ### Download
 Download the latest release for your platform:
@@ -72,7 +72,7 @@ Download the latest release for your platform:
 ### Tech Stack
 - **Frontend**: React 18 + TypeScript + Tailwind CSS
 - **Backend**: Tauri (Rust)
-- **AI Models**: OpenAI GPT-4o-mini, Claude 3.5 Sonnet, Gemini Pro, Perplexity Llama 3.1
+- **AI Models**: OpenAI GPT-4o-mini, Claude 3.5 Sonnet, Gemini Pro, Perplexity Sonar
 - **State**: Zustand
 
 ### Prerequisites
@@ -84,7 +84,7 @@ Download the latest release for your platform:
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/rephraser.git
+git clone https://github.com/rsiddqp/rephraser.git
 cd rephraser
 
 # Install dependencies
@@ -102,14 +102,16 @@ npm run tauri build
 ```
 rephraser/
 ├── src/                    # React frontend
-│   ├── components/         # UI components
-│   ├── store/             # State management
+│   ├── components/         # UI components (Settings)
+│   ├── store/             # State management (config only)
 │   └── App.tsx            # Main app component
 ├── src-tauri/             # Rust backend
 │   └── src/
-│       ├── ai.rs          # OpenAI integration
-│       ├── clipboard_ops.rs # Text capture/replacement
-│       └── config.rs       # Settings management
+│       ├── ai.rs          # Multi-model AI integration
+│       ├── accessibility.rs # Text capture
+│       ├── config.rs       # Settings management
+│       └── lib.rs         # Main Tauri app
+├── backend-proxy/         # Default proxy server
 └── memory-bank/           # Project documentation
 ```
 
@@ -128,13 +130,29 @@ Settings are stored in:
 - `api_key`: Your API key (optional, only needed for custom providers)
 - `theme`: UI theme (light/dark/system)
 
+## AI Provider Details
+
+### Default (Proxy Server)
+- **Model**: OpenAI GPT-4o-mini (via proxy)
+- **Setup**: None required
+- **Cost**: Free for users
+- **Status**: ✅ Verified working
+
+### Advanced Options
+| Provider | Model | API Endpoint | Tested |
+|----------|-------|--------------|--------|
+| OpenAI | gpt-4o-mini | api.openai.com | ✅ |
+| Anthropic | claude-3-5-sonnet-20241022 | api.anthropic.com | ✅ |
+| Google | gemini-pro | generativelanguage.googleapis.com | ✅ |
+| Perplexity | sonar | api.perplexity.ai | ✅ |
+
 ## Privacy & Security 🔒
 
 - **No Data Storage**: Text is never logged or stored
-- **Local Processing**: Only sends to OpenAI API when rephrasing
-- **Encrypted Keys**: API keys stored securely in OS keychain
+- **Local Processing**: Only sends to chosen AI provider when rephrasing
+- **Secure Storage**: API keys stored in config.json on your device
 - **No Tracking**: No analytics or telemetry
-- **Open Source**: Code is auditable (planned)
+- **Your Choice**: Use default proxy or your own API key
 
 ## Known Limitations
 
@@ -142,6 +160,23 @@ Settings are stored in:
 - Some applications may block text injection (e.g., password managers)
 - Rich text formatting may be lost (plaintext only in MVP)
 - English language only (multi-language support planned)
+
+## Troubleshooting
+
+### App doesn't capture text
+- Ensure accessibility permissions are granted in System Preferences
+- Try selecting text in a different application
+- Restart the app
+
+### API errors
+- Check your API key is correct in Settings
+- Verify internet connection
+- Switch to default Proxy Server if issues persist
+
+### Keyboard shortcut not working
+- Restart the app to re-register the shortcut
+- Check no other app is using Cmd+Shift+R
+- Try using the app window directly (click Rephrase button)
 
 ## Roadmap 🗺️
 
@@ -162,7 +197,7 @@ Proprietary - All rights reserved
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/rephraser/issues)
+- **Issues**: [GitHub Issues](https://github.com/rsiddqp/rephraser/issues)
 - **Email**: support@rephraser.app
 - **Documentation**: [docs.rephraser.app](https://docs.rephraser.app)
 
@@ -172,6 +207,9 @@ Built with:
 - [Tauri](https://tauri.app) - Desktop framework
 - [React](https://react.dev) - UI framework
 - [OpenAI](https://openai.com) - AI rephrasing
+- [Anthropic](https://anthropic.com) - Claude AI
+- [Google](https://ai.google.dev) - Gemini AI
+- [Perplexity](https://perplexity.ai) - Perplexity AI
 - [Tailwind CSS](https://tailwindcss.com) - Styling
 
 ---
