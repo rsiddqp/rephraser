@@ -12,39 +12,80 @@ const Settings = ({ onClose }: SettingsProps) => {
   const [apiKey, setApiKey] = useState(config?.api_key || '');
   const [modelProvider, setModelProvider] = useState(config?.model_provider || 'proxy'); // Default to proxy
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Load config when modal opens
+  useEffect(() => {
+    const initConfig = async () => {
+      console.log('🔵 Settings opened, loading config...');
+      try {
+        // Load config directly to ensure we have it
+        const loadedConfig = await invoke<any>('load_config');
+        console.log('✅ Config loaded:', { ...loadedConfig, api_key: loadedConfig.api_key ? '***' : 'none' });
+        
+        setConfig(loadedConfig);
+        setApiKey(loadedConfig.api_key || '');
+        setModelProvider(loadedConfig.model_provider || 'proxy');
+        setLoading(false);
+      } catch (error) {
+        console.error('❌ Failed to load config:', error);
+        setLoading(false);
+      }
+    };
+    
+    initConfig();
+  }, []);
 
   useEffect(() => {
     if (config) {
+      console.log('🔵 Config updated in store:', { ...config, api_key: config.api_key ? '***' : 'none' });
       setApiKey(config.api_key || '');
       setModelProvider(config.model_provider || 'proxy'); // Default to proxy
     }
   }, [config]);
 
   const handleSave = async () => {
-    if (!config) return;
+    console.log('🔵 Save button clicked');
+    console.log('🔵 Current state:', { modelProvider, apiKey: apiKey ? '***' : 'empty', config });
+    
+    if (!config) {
+      console.error('❌ No config available');
+      return;
+    }
 
     // Only require API key if not using proxy
     if (modelProvider !== 'proxy' && !apiKey.trim()) {
+      console.error('❌ API key required but empty');
       alert('Please enter an API key for the selected provider, or use "Proxy Server (Default)" to use the app without your own API key.');
       return;
     }
 
+    console.log('✅ Validation passed, saving...');
     setSaving(true);
     try {
       const newConfig = {
         ...config,
-        api_key: apiKey,
+        api_key: apiKey.trim(), // Trim any whitespace
         model_provider: modelProvider,
       };
       
+      console.log('📤 Calling save_config with:', { 
+        ...newConfig, 
+        api_key: newConfig.api_key ? '***' : 'empty' 
+      });
+      
       await invoke('save_config', { config: newConfig });
+      console.log('✅ Config saved successfully');
+      
       setConfig(newConfig);
+      console.log('✅ State updated, closing modal');
       onClose();
     } catch (error) {
-      console.error('Failed to save config:', error);
-      alert('Failed to save settings');
+      console.error('❌ Failed to save config:', error);
+      alert(`Failed to save settings: ${error}`);
     } finally {
       setSaving(false);
+      console.log('🔵 Save complete');
     }
   };
 
@@ -105,6 +146,16 @@ const Settings = ({ onClose }: SettingsProps) => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-[500px] p-8 text-center">
+          <p className="text-gray-700 dark:text-gray-300">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-[500px] max-h-[80vh] overflow-y-auto">
@@ -129,6 +180,7 @@ const Settings = ({ onClose }: SettingsProps) => {
             <select
               value={modelProvider}
               onChange={(e) => {
+                console.log('🔵 Provider changed to:', e.target.value);
                 setModelProvider(e.target.value);
                 if (e.target.value === 'proxy') {
                   setApiKey(''); // Clear API key when switching to proxy
@@ -140,7 +192,7 @@ const Settings = ({ onClose }: SettingsProps) => {
               <option value="openai">OpenAI (GPT-4o-mini) - Use your API key</option>
               <option value="claude">Anthropic (Claude 3.5 Sonnet) - Use your API key</option>
               <option value="gemini">Google (Gemini Pro) - Use your API key</option>
-              <option value="perplexity">Perplexity (Llama 3.1) - Use your API key</option>
+              <option value="perplexity">Perplexity (Sonar) - Use your API key</option>
             </select>
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               Default uses proxy server (free). Advanced users can use their own API keys.
@@ -153,13 +205,16 @@ const Settings = ({ onClose }: SettingsProps) => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {getProviderName()} API Key (Optional)
             </label>
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
+              <input
+                type="password"
+                value={apiKey}
+                onChange={(e) => {
+                  console.log('🔵 API key input changed, length:', e.target.value.length);
+                  setApiKey(e.target.value);
+                }}
                 placeholder={getApiKeyPlaceholder()}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               Get your API key from{' '}
               <a
@@ -229,9 +284,15 @@ const Settings = ({ onClose }: SettingsProps) => {
             Cancel
           </button>
           <button
-            onClick={handleSave}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🔵 Save button clicked (event fired)');
+              handleSave();
+            }}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+            type="button"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save size={16} />
             {saving ? 'Saving...' : 'Save'}

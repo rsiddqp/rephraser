@@ -13,12 +13,32 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [modelProvider, setModelProvider] = useState('proxy'); // Default to proxy
+  
+  // Reload config when settings modal closes
+  const handleSettingsClose = async () => {
+    console.log('🔵 Settings closed, reloading config...');
+    try {
+      const config = await invoke<any>('load_config');
+      console.log('✅ Config reloaded:', { 
+        provider: config.model_provider, 
+        hasApiKey: !!config.api_key 
+      });
+      
+      // Update current style if default_style changed
+      if (config.default_style) {
+        setCurrentStyle(config.default_style);
+      }
+    } catch (error) {
+      console.error('❌ Failed to reload config:', error);
+    }
+    setShowSettings(false);
+  };
   
   const rephrasedSectionRef = useRef<HTMLDivElement>(null);
 
   const handleRephrase = async () => {
+    console.log('🔄 handleRephrase called (manual button click)');
+    
     const trimmedText = inputText.trim();
     if (!trimmedText) {
       setError('Please enter some text');
@@ -31,29 +51,48 @@ function App() {
       return;
     }
 
-    // Only require API key if not using proxy
-    if (modelProvider !== 'proxy' && !apiKey) {
-      setError('Please configure your API key in Settings or use the default Proxy Server');
-      setShowSettings(true);
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
 
     try {
+      // Load FRESH config to get current provider settings
+      console.log('🔄 Loading fresh config for manual rephrase...');
+      const freshConfig = await invoke<any>('load_config');
+      const currentProvider = freshConfig.model_provider || 'proxy';
+      const currentApiKey = freshConfig.api_key || '';
+      
+      console.log('✅ Using fresh config:', {
+        provider: currentProvider,
+        hasApiKey: !!currentApiKey
+      });
+      
+      // Only require API key if not using proxy
+      if (currentProvider !== 'proxy' && !currentApiKey) {
+        setError('Please configure your API key in Settings or use the default Proxy Server');
+        setShowSettings(true);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('📤 Calling rephrase_text with:', {
+        provider: currentProvider,
+        style: currentStyle,
+        hasApiKey: !!currentApiKey
+      });
+      
       const rephrased = await invoke<string>('rephrase_text', {
         text: trimmedText,
         style: currentStyle,
-        provider: modelProvider,
-        apiKey: apiKey,
+        provider: currentProvider,
+        apiKey: currentApiKey,
       });
 
       setRephrasedText(rephrased);
+      console.log('✅ Rephrase completed');
     } catch (e) {
       const errorMessage = typeof e === 'string' ? e : 'Failed to rephrase text. Please try again.';
       setError(errorMessage);
-      console.error('Rephrase error:', e);
+      console.error('❌ Rephrase error:', e);
     } finally {
       setIsLoading(false);
     }
@@ -117,18 +156,36 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [rephrasedText]);
 
-  // Load API key and register hotkey on mount
+  // Load config on mount to set initial style
+  useEffect(() => {
+    const loadInitialConfig = async () => {
+      try {
+        const config = await invoke<any>('load_config');
+        console.log('🚀 Initial config loaded:', {
+          provider: config.model_provider,
+          hasApiKey: !!config.api_key,
+          style: config.default_style
+        });
+        setCurrentStyle(config.default_style || 'professional');
+      } catch (error) {
+        console.error('❌ Failed to load initial config:', error);
+      }
+    };
+    
+    loadInitialConfig();
+  }, []);
+
+  // Register hotkey on mount
   useEffect(() => {
     let hotkeyRegistered = '';
     let isProcessing = false; // Prevent concurrent processing
     
-    // Load config and API key
+    // Register hotkey (config is loaded fresh on each hotkey press)
     invoke<any>('load_config').then(async config => {
-      if (config.api_key) {
-        setApiKey(config.api_key);
-      }
-      // Always set model provider, default to proxy if not set
-      setModelProvider(config.model_provider || 'proxy');
+      console.log('🔑 Initial config check for hotkey setup:', {
+        provider: config.model_provider,
+        hasApiKey: !!config.api_key
+      });
       
       // Register global hotkey - try multiple formats
       const hotkeyOptions = [
@@ -140,6 +197,14 @@ function App() {
       let registered = false;
       for (const hotkeyString of hotkeyOptions) {
         try {
+          // Try to unregister first in case it's already registered
+          try {
+            await unregister(hotkeyString);
+            console.log(`🔄 Unregistered existing hotkey: ${hotkeyString}`);
+          } catch (e) {
+            // Ignore error if it wasn't registered
+          }
+          
           await register(hotkeyString, async () => {
           // Prevent concurrent executions
           if (isProcessing) {
@@ -151,6 +216,14 @@ function App() {
           console.log('🔥 Hotkey triggered!');
           
           try {
+            // CRITICAL: Load FRESH config every time hotkey is pressed
+            console.log('🔄 Loading current config...');
+            const freshConfig = await invoke<any>('load_config');
+            console.log('✅ Fresh config loaded:', {
+              provider: freshConfig.model_provider,
+              hasApiKey: !!freshConfig.api_key
+            });
+            
             // CRITICAL: Capture text FIRST (while original app has focus)
             console.log('📋 Capturing selected text from focused app...');
             const text = await invoke<string>('get_selected_text');
@@ -171,16 +244,22 @@ function App() {
             setInputText(text);
             setError(null);
             
+            // Use FRESH config, not the captured one
+            const currentProvider = freshConfig.model_provider || 'proxy';
+            const currentApiKey = freshConfig.api_key || '';
+            
+            console.log('🎯 Using provider from fresh config:', currentProvider);
+            
             // Automatically trigger rephrase if using proxy or API key exists
-            if (config.model_provider === 'proxy' || config.api_key) {
+            if (currentProvider === 'proxy' || currentApiKey) {
               setIsLoading(true);
               
               try {
                 const rephrased = await invoke<string>('rephrase_text', {
                   text,
                   style: currentStyle,
-                  provider: config.model_provider || 'proxy',
-                  apiKey: config.api_key || '',
+                  provider: currentProvider,
+                  apiKey: currentApiKey,
                 });
                 setRephrasedText(rephrased);
                 console.log('✅ Rephrasing complete!');
@@ -336,7 +415,7 @@ function App() {
       </div>
 
       {/* Settings Modal */}
-      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+      {showSettings && <Settings onClose={handleSettingsClose} />}
     </div>
   );
 }
