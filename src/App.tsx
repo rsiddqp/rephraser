@@ -175,7 +175,7 @@ function App() {
     let hotkeyRegistered = '';
     let isProcessing = false;
     
-    invoke<any>('load_config').then(async config => {
+    invoke<any>('load_config').then(async _config => {
       const hotkeyOptions = [
         'CmdOrCtrl+Shift+R',
         'CommandOrControl+Shift+R',
