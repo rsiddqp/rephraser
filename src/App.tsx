@@ -152,9 +152,9 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [rephrasedText]);
 
-  // Load config on mount to set initial style
+  // Load config + check accessibility on mount
   useEffect(() => {
-    const loadInitialConfig = async () => {
+    const init = async () => {
       try {
         const config = await invoke<any>('load_config');
         console.log('🚀 Initial config loaded:', {
@@ -165,9 +165,18 @@ function App() {
       } catch (error) {
         console.error('❌ Failed to load initial config:', error);
       }
+
+      try {
+        const trusted = await invoke<boolean>('check_accessibility');
+        if (!trusted) {
+          setError('Accessibility permission required. Please enable Rephraser in System Settings → Privacy & Security → Accessibility, then restart the app.');
+        }
+      } catch (error) {
+        console.error('❌ Accessibility check failed:', error);
+      }
     };
     
-    loadInitialConfig();
+    init();
   }, []);
 
   // Register hotkey on mount

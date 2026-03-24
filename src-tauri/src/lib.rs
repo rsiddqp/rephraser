@@ -299,6 +299,34 @@ fn delete_api_key() -> Result<(), String> {
         .map_err(|e| format!("Failed to remove API key: {}", e))
 }
 
+#[tauri::command]
+fn check_accessibility() -> Result<bool, String> {
+    #[cfg(target_os = "macos")]
+    {
+        // AXIsProcessTrustedWithOptions will show the system prompt if not trusted
+        use cocoa::base::{id, nil, YES};
+        use objc::{class, msg_send, sel, sel_impl};
+        unsafe {
+            let key = cocoa::foundation::NSString::alloc(nil);
+            let key = cocoa::foundation::NSString::init_str(key, "AXTrustedCheckOptionPrompt");
+            let val = YES; // triggers the system prompt dialog
+            let opts: id = msg_send![class!(NSDictionary), dictionaryWithObject:val forKey:key];
+            
+            // Link to ApplicationServices framework function
+            extern "C" {
+                fn AXIsProcessTrustedWithOptions(options: id) -> bool;
+            }
+            let trusted = AXIsProcessTrustedWithOptions(opts);
+            eprintln!("🔐 Accessibility trusted: {}", trusted);
+            Ok(trusted)
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Ok(true)
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -318,10 +346,33 @@ pub fn run() {
             get_api_key,
             set_api_key,
             delete_api_key,
+            check_accessibility,
         ])
-        .setup(|app| {
+        .setup(|_app| {
             #[cfg(debug_assertions)]
             println!("Rephraser started successfully in development mode!");
+            
+            // Prompt for accessibility permissions on startup (macOS)
+            #[cfg(target_os = "macos")]
+            {
+                use cocoa::base::{id, nil, YES};
+                use objc::{class, msg_send, sel, sel_impl};
+                unsafe {
+                    let key = cocoa::foundation::NSString::alloc(nil);
+                    let key = cocoa::foundation::NSString::init_str(key, "AXTrustedCheckOptionPrompt");
+                    let val = YES;
+                    let opts: id = msg_send![class!(NSDictionary), dictionaryWithObject:val forKey:key];
+                    extern "C" {
+                        fn AXIsProcessTrustedWithOptions(options: id) -> bool;
+                    }
+                    let trusted = AXIsProcessTrustedWithOptions(opts);
+                    if trusted {
+                        println!("✅ Accessibility permission granted");
+                    } else {
+                        println!("⚠️  Accessibility permission not yet granted — system prompt shown");
+                    }
+                }
+            }
             
             // Ensure config exists with proper defaults
             match config::load() {
