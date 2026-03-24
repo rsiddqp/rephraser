@@ -80,6 +80,9 @@ echo "Checking Rust targets..."
 rustup target add aarch64-apple-darwin 2>/dev/null || true
 rustup target add x86_64-apple-darwin  2>/dev/null || true
 
+# Tauri CLI expects CI=true/false, not 1
+unset CI
+
 # --- Build universal binary ---
 echo ""
 echo "Building universal binary (arm64 + x86_64)..."

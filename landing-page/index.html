@@ -13,264 +13,80 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="max-w-4xl mx-auto px-6 py-16">
         <!-- Header -->
-        <div class="text-center mb-16">
-            <h1 class="text-6xl font-bold text-gray-900 mb-4">Rephraser</h1>
-            <p class="text-xl text-gray-600 mb-4">Instantly rephrase text in any app with AI</p>
-            <p class="text-lg text-green-600 font-semibold mb-2">✨ Works immediately - No API key required!</p>
-            <p class="text-sm text-gray-500 mb-8">Advanced: Optional support for OpenAI, Claude, Gemini & Perplexity with your own API keys</p>
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-gray-900 mb-3">Rephraser</h1>
+            <p class="text-xl text-gray-600 mb-8">Rephrase any text, in any app, instantly.</p>
             
-            <!-- Download Button -->
-            <div class="flex flex-col items-center gap-4">
             <a href="./Rephraser.zip" 
                download
                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg shadow-lg transition-all transform hover:scale-105 inline-flex items-center gap-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    Download for macOS (Apple Silicon)
-                </a>
-                <p class="text-sm text-gray-500">Free • Version 0.1.0 • 4.3 MB • Updated Nov 21, 2024</p>
-            </div>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Download for macOS
+            </a>
+            <p class="text-sm text-gray-400 mt-3">Free &bull; macOS 10.15+ &bull; 8.8 MB</p>
         </div>
 
-        <!-- Demo Video/GIF Placeholder -->
-        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-16">
-            <div class="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                <div class="text-center">
-                    <p class="text-gray-400 text-lg">Demo Video Coming Soon</p>
-                    <p class="text-gray-300 text-sm mt-2">See Rephraser in action</p>
-                </div>
-            </div>
+        <!-- Setup -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-5">Setup</h2>
+            <ol class="space-y-3 text-gray-700">
+                <li class="flex gap-3 items-start">
+                    <span class="flex-shrink-0 w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">1</span>
+                    <span>Unzip and move <strong>Rephraser.app</strong> to Applications</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                    <span class="flex-shrink-0 w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">2</span>
+                    <span>Open it and grant <strong>Accessibility permissions</strong> when prompted</span>
+                </li>
+                <li class="flex gap-3 items-start">
+                    <span class="flex-shrink-0 w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm">3</span>
+                    <span>Select any text anywhere, press <strong>Cmd+Shift+R</strong></span>
+                </li>
+            </ol>
+            <p class="text-sm text-gray-500 mt-4">That's it. No account, no API key, no configuration.</p>
         </div>
 
-        <!-- How It Works -->
-        <div class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">How It Works</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-xl p-6 shadow-lg">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-2xl font-bold text-blue-600">1</span>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Select Text</h3>
-                    <p class="text-gray-600">Highlight any text in any app, or press Cmd+A to select all</p>
-                </div>
-                
-                <div class="bg-white rounded-xl p-6 shadow-lg">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-2xl font-bold text-blue-600">2</span>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Press Cmd+Shift+R</h3>
-                    <p class="text-gray-600">Window pops up above your text with rephrased version</p>
-                </div>
-                
-                <div class="bg-white rounded-xl p-6 shadow-lg">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-2xl font-bold text-blue-600">3</span>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Copy & Use</h3>
-                    <p class="text-gray-600">Press Cmd+C to copy and close, then paste wherever you need</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Features -->
-        <div class="mb-16">
-            <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Features</h2>
+        <!-- How it works -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-5">How it works</h2>
             <div class="grid md:grid-cols-2 gap-6">
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">System-Wide</h3>
-                        <p class="text-gray-600">Works in any application - email, Slack, documents, anywhere</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Ready Out of the Box</h3>
-                        <p class="text-gray-600">Works immediately - no API key setup required</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">3 Styles</h3>
-                        <p class="text-gray-600">Professional, Casual, and Sarcasm modes for any context</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Optional: Your Own AI</h3>
-                        <p class="text-gray-600">Advanced users can use OpenAI, Claude, Gemini, or Perplexity with their own keys</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Lightning Fast</h3>
-                        <p class="text-gray-600">Sub-second response time with optimized AI</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Privacy First</h3>
-                        <p class="text-gray-600">No data logging, text never stored</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">Smart Positioning</h3>
-                        <p class="text-gray-600">Appears on your active screen, never goes off-screen</p>
-                    </div>
-                </div>
-
-                <div class="flex gap-4">
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-900 mb-1">One-Click Dismiss</h3>
-                        <p class="text-gray-600">Cmd+C copies result and closes window instantly</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Example -->
-        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-16">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">See It in Action</h2>
-            <div class="grid md:grid-cols-2 gap-8">
                 <div>
-                    <div class="text-sm font-semibold text-gray-500 mb-2">Original (Casual)</div>
+                    <div class="text-sm font-medium text-gray-400 mb-2">You write:</div>
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <p class="text-gray-700">hey can we push this to next week im swamped</p>
                     </div>
                 </div>
                 <div>
-                    <div class="text-sm font-semibold text-blue-600 mb-2">Professional Style</div>
+                    <div class="text-sm font-medium text-blue-500 mb-2">Rephraser returns:</div>
                     <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
                         <p class="text-gray-900">Would it be possible to reschedule this for next week? I'm currently managing several urgent priorities.</p>
                     </div>
                 </div>
             </div>
+            <p class="text-sm text-gray-500 mt-4">Choose from Professional, Casual, or Sarcasm styles. Press Cmd+C to copy and dismiss.</p>
         </div>
 
-        <!-- Installation -->
-        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-16">
-            <h2 class="text-3xl font-bold text-gray-900 mb-6">Installation</h2>
-            <ol class="space-y-4 text-gray-700">
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">1</span>
-                    <span><strong>Download</strong> Rephraser.zip and extract it</span>
-                </li>
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">2</span>
-                    <span><strong>Move</strong> Rephraser.app to Applications folder (optional)</span>
-                </li>
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">3</span>
-                    <div>
-                        <strong>Open the app:</strong> Right-click (⌃+click) Rephraser.app → Select <strong>"Open"</strong>
-                        <div class="text-sm text-gray-500 mt-1">First time only: macOS requires right-click for apps not from the App Store</div>
-                    </div>
-                </li>
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">4</span>
-                    <span>Click <strong>"Open"</strong> when macOS asks for confirmation</span>
-                </li>
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">5</span>
-                    <span><strong>Grant accessibility permissions</strong> when prompted (System Preferences will open)</span>
-                </li>
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">6</span>
-                    <span><strong>Done!</strong> Select any text and press Cmd+Shift+R - it works immediately!</span>
-                </li>
-                <li class="flex gap-3">
-                    <span class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✨</span>
-                    <div>
-                        <strong>Optional - Advanced users:</strong> Use your own AI model
-                        <div class="text-sm text-gray-500 mt-1">Click Settings (⚙️) to choose OpenAI, Claude, Gemini, or Perplexity with your API key</div>
-                        <div class="text-sm text-gray-500">Get keys from: <a href="https://platform.openai.com/api-keys" class="text-blue-600 hover:underline" target="_blank">OpenAI</a>, <a href="https://console.anthropic.com/account/keys" class="text-blue-600 hover:underline" target="_blank">Anthropic</a>, <a href="https://makersuite.google.com/app/apikey" class="text-blue-600 hover:underline" target="_blank">Google</a>, or <a href="https://www.perplexity.ai/settings/api" class="text-blue-600 hover:underline" target="_blank">Perplexity</a></div>
-                    </div>
-                </li>
-            </ol>
-            
-            <div class="mt-6 space-y-4">
-                <div class="p-4 bg-blue-50 border-l-4 border-blue-400 text-sm text-gray-700">
-                <p class="font-semibold mb-1">✨ This app is code-signed for your security</p>
-                <p>Right-clicking → Open on first launch is a standard macOS security feature. After the first time, you can open normally!</p>
-                </div>
-                <div class="p-4 bg-green-50 border-l-4 border-green-400 text-sm text-gray-700">
-                    <p class="font-semibold mb-1">🚀 Works Out of the Box</p>
-                    <p>No API key needed! The app works immediately after installation. For advanced users, you can optionally configure your own OpenAI, Claude, Gemini, or Perplexity API key in Settings.</p>
-                </div>
+        <!-- Advanced -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">Advanced: Use your own AI</h2>
+            <p class="text-gray-600 mb-4">Rephraser works out of the box. If you prefer, you can bring your own API key from any of these providers:</p>
+            <div class="flex flex-wrap gap-3">
+                <a href="https://platform.openai.com/api-keys" target="_blank" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors">OpenAI</a>
+                <a href="https://console.anthropic.com/account/keys" target="_blank" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors">Anthropic Claude</a>
+                <a href="https://makersuite.google.com/app/apikey" target="_blank" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors">Google Gemini</a>
+                <a href="https://www.perplexity.ai/settings/api" target="_blank" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors">Perplexity</a>
             </div>
+            <p class="text-sm text-gray-400 mt-3">Configure in Settings inside the app. Keys are stored securely in your system keychain.</p>
         </div>
 
         <!-- Footer -->
-        <div class="text-center text-gray-600">
-            <p class="mb-2">Made for macOS (Apple Silicon)</p>
-            <p class="text-sm">Beta v0.1.0 - Free to use</p>
+        <div class="text-center text-gray-400 text-sm">
+            <p>macOS 10.15+ &bull; Intel + Apple Silicon &bull; v0.1.0</p>
         </div>
     </div>
 </body>
 </html>
-

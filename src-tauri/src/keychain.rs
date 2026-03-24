@@ -22,8 +22,14 @@ pub fn get(account: &str) -> Result<Option<String>, Box<dyn Error>> {
             }
         }
         Err(e) => {
-            // errSecItemNotFound (-25300) means the key simply doesn't exist yet
-            if e.to_string().contains("-25300") || e.to_string().contains("not found") {
+            let msg = e.to_string().to_lowercase();
+            // Handle all variants of "not found" errors from Security framework
+            if msg.contains("-25300")
+                || msg.contains("not found")
+                || msg.contains("could not be found")
+                || msg.contains("specified item")
+                || msg.contains("errSecItemNotFound")
+            {
                 Ok(None)
             } else {
                 Err(e.into())
@@ -38,8 +44,13 @@ pub fn delete(account: &str) -> Result<(), Box<dyn Error>> {
     match delete_generic_password(SERVICE_NAME, account) {
         Ok(()) => Ok(()),
         Err(e) => {
-            if e.to_string().contains("-25300") || e.to_string().contains("not found") {
-                Ok(()) // already absent
+            let msg = e.to_string().to_lowercase();
+            if msg.contains("-25300")
+                || msg.contains("not found")
+                || msg.contains("could not be found")
+                || msg.contains("specified item")
+            {
+                Ok(())
             } else {
                 Err(e.into())
             }

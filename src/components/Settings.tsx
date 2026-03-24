@@ -9,7 +9,7 @@ interface SettingsProps {
 
 const Settings = ({ onClose }: SettingsProps) => {
   const { config, setConfig } = useStore();
-  const [apiKey, setApiKey] = useState(config?.api_key || '');
+  const [apiKey, setApiKey] = useState('');
   const [modelProvider, setModelProvider] = useState(config?.model_provider || 'proxy'); // Default to proxy
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
