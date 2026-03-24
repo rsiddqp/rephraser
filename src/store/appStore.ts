@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/core';
 
+export interface CustomStyle {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
 interface AppConfig {
   hotkey: string;
   default_style: string;
@@ -8,6 +14,7 @@ interface AppConfig {
   theme: string;
   start_on_login: boolean;
   auto_update: boolean;
+  custom_styles: CustomStyle[];
 }
 
 interface AppState {

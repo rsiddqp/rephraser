@@ -114,11 +114,11 @@ async function checkRateLimit(ip) {
 // ---------------------------------------------------------------------------
 // Request validation middleware
 // ---------------------------------------------------------------------------
-const VALID_STYLES = new Set(['professional', 'casual', 'sarcasm']);
+const VALID_STYLES = new Set(['professional', 'casual', 'sarcasm', 'custom']);
 const MAX_TEXT_LENGTH = 10_000;
 
 function validateRephraseBody(req, res, next) {
-  const { text, style } = req.body;
+  const { text, style, custom_prompt } = req.body;
 
   if (!text || typeof text !== 'string') {
     return res.status(400).json({ error: 'Text is required and must be a string.' });
@@ -136,6 +136,9 @@ function validateRephraseBody(req, res, next) {
     return res.status(400).json({
       error: `Invalid style "${style}". Must be one of: ${[...VALID_STYLES].join(', ')}`,
     });
+  }
+  if (style === 'custom' && (!custom_prompt || typeof custom_prompt !== 'string' || !custom_prompt.trim())) {
+    return res.status(400).json({ error: 'custom_prompt is required when style is "custom".' });
   }
 
   req.body.text = trimmed;
@@ -180,7 +183,7 @@ app.post('/api/rephrase', validateRephraseBody, async (req, res) => {
     });
   }
 
-  const { text, style } = req.body;
+  const { text, style, custom_prompt } = req.body;
 
   const prompts = {
     professional:
@@ -197,6 +200,9 @@ app.post('/api/rephrase', validateRephraseBody, async (req, res) => {
       'Rephrase the following text with subtle sarcasm while maintaining the surface-level message. ' +
       'Keep it witty but not offensive. ' +
       'Do not add any preamble or explanation, just return the rephrased text:\n\n' +
+      text,
+    custom:
+      (custom_prompt || '') + ' Do not add any preamble or explanation, just return the rephrased text:\n\n' +
       text,
   };
 

@@ -33,11 +33,13 @@ async fn rephrase_text(
     style: Style,
     provider: String,
     api_key: String,
+    custom_prompt: Option<String>,
 ) -> Result<String, String> {
-    eprintln!("🔄 Rephrase request: provider={}, style={:?}, text_len={}", provider, style, text.len());
+    let prompt_ref = custom_prompt.as_deref().unwrap_or("");
+    eprintln!("🔄 Rephrase request: provider={}, style={:?}, custom={}, text_len={}", 
+        provider, style, !prompt_ref.is_empty(), text.len());
     
-    // Validate text length
-    const MAX_TEXT_LENGTH: usize = 10000; // ~2500 tokens
+    const MAX_TEXT_LENGTH: usize = 10000;
     if text.len() > MAX_TEXT_LENGTH {
         return Err(format!("Text too long. Maximum {} characters allowed.", MAX_TEXT_LENGTH));
     }
@@ -46,14 +48,13 @@ async fn rephrase_text(
         return Err("Text cannot be empty".to_string());
     }
     
-    // Only require API key if not using proxy server
     if provider != "proxy" && api_key.trim().is_empty() {
         eprintln!("❌ API key required for provider: {}", provider);
         return Err("API key is required for custom providers. Please configure it in Settings or use the default (Proxy Server).".to_string());
     }
     
     eprintln!("✅ Calling AI module with provider: {}", provider);
-    match ai::rephrase_text(&text, &style, &provider, &api_key).await {
+    match ai::rephrase_text(&text, &style, &provider, &api_key, prompt_ref).await {
         Ok(result) => {
             eprintln!("✅ Rephrase successful, result_len={}", result.len());
             Ok(result)

@@ -3,29 +3,46 @@ import { invoke } from '@tauri-apps/api/core';
 import { register, unregister } from '@tauri-apps/plugin-global-shortcut';
 import { RefreshCw, Copy, Settings as SettingsIcon } from 'lucide-react';
 import Settings from './components/Settings';
+import type { CustomStyle } from './store/appStore';
 
-type StyleMode = 'professional' | 'casual' | 'sarcasm';
+const BUILTIN_STYLES = ['professional', 'casual', 'sarcasm'] as const;
 
 function App() {
   const [inputText, setInputText] = useState('');
   const [rephrasedText, setRephrasedText] = useState('');
-  const [currentStyle, setCurrentStyle] = useState<StyleMode>('professional');
+  const [currentStyle, setCurrentStyle] = useState<string>('professional');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [customStyles, setCustomStyles] = useState<CustomStyle[]>([]);
   
-  // Reload config when settings modal closes
+  const getCustomPromptForStyle = (styleId: string): string => {
+    const custom = customStyles.find(s => s.id === styleId);
+    return custom?.prompt || '';
+  };
+
+  const getStyleLabel = (styleId: string): string => {
+    if (BUILTIN_STYLES.includes(styleId as any)) {
+      return styleId.charAt(0).toUpperCase() + styleId.slice(1);
+    }
+    const custom = customStyles.find(s => s.id === styleId);
+    return custom?.name || styleId;
+  };
+
+  const isBuiltinStyle = (styleId: string): boolean => {
+    return BUILTIN_STYLES.includes(styleId as any);
+  };
+
   const handleSettingsClose = async () => {
-    console.log('🔵 Settings closed, reloading config...');
     try {
       const config = await invoke<any>('load_config');
-      console.log('✅ Config reloaded:', { provider: config.model_provider });
       
       if (config.default_style) {
         setCurrentStyle(config.default_style);
       }
+      setCustomStyles(config.custom_styles || []);
     } catch (error) {
-      console.error('❌ Failed to reload config:', error);
+      console.error('Failed to reload config:', error);
     }
     setShowSettings(false);
   };
@@ -33,15 +50,12 @@ function App() {
   const rephrasedSectionRef = useRef<HTMLDivElement>(null);
 
   const handleRephrase = async () => {
-    console.log('🔄 handleRephrase called (manual button click)');
-    
     const trimmedText = inputText.trim();
     if (!trimmedText) {
       setError('Please enter some text');
       return;
     }
 
-    // Check text length
     if (trimmedText.length > 10000) {
       setError('Text is too long. Maximum 10,000 characters allowed.');
       return;
@@ -51,17 +65,11 @@ function App() {
     setError(null);
 
     try {
-      console.log('🔄 Loading fresh config + keychain for manual rephrase...');
       const [freshConfig, currentApiKey] = await Promise.all([
         invoke<any>('load_config'),
         invoke<string | null>('get_api_key'),
       ]);
       const currentProvider = freshConfig.model_provider || 'proxy';
-      
-      console.log('✅ Using fresh config:', {
-        provider: currentProvider,
-        hasApiKey: !!currentApiKey,
-      });
       
       if (currentProvider !== 'proxy' && !currentApiKey) {
         setError('Please configure your API key in Settings or use the default Proxy Server');
@@ -70,25 +78,21 @@ function App() {
         return;
       }
 
-      console.log('📤 Calling rephrase_text with:', {
-        provider: currentProvider,
-        style: currentStyle,
-        hasApiKey: !!currentApiKey
-      });
+      const customPrompt = getCustomPromptForStyle(currentStyle);
       
       const rephrased = await invoke<string>('rephrase_text', {
         text: trimmedText,
-        style: currentStyle,
+        style: isBuiltinStyle(currentStyle) ? currentStyle : 'professional',
         provider: currentProvider,
         apiKey: currentApiKey || '',
+        customPrompt: customPrompt || null,
       });
 
       setRephrasedText(rephrased);
-      console.log('✅ Rephrase completed');
     } catch (e) {
       const errorMessage = typeof e === 'string' ? e : 'Failed to rephrase text. Please try again.';
       setError(errorMessage);
-      console.error('❌ Rephrase error:', e);
+      console.error('Rephrase error:', e);
     } finally {
       setIsLoading(false);
     }
@@ -99,12 +103,8 @@ function App() {
     
     try {
       await invoke('copy_to_clipboard', { text: rephrasedText });
-      console.log('✅ Copied to clipboard, minimizing window...');
-      
-      // Immediately hide window for seamless workflow
       await invoke('hide_popup');
       
-      // Reset state for next use
       setInputText('');
       setRephrasedText('');
       setError(null);
@@ -131,18 +131,14 @@ function App() {
     }
   };
 
-  // Handle Cmd+C / Ctrl+C to copy rephrased text and minimize
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
-      // Check if Cmd+C (Mac) or Ctrl+C (Windows/Linux)
       if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
-        // Only handle if we have rephrased text and we're not in an input field
         const target = e.target as HTMLElement;
         const isInput = target.tagName === 'TEXTAREA' || target.tagName === 'INPUT';
         
         if (rephrasedText && !isInput) {
           e.preventDefault();
-          console.log('⌨️ Cmd+C detected, copying rephrased text...');
           await handleCopy();
         }
       }
@@ -152,18 +148,14 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [rephrasedText]);
 
-  // Load config + check accessibility on mount
   useEffect(() => {
     const init = async () => {
       try {
         const config = await invoke<any>('load_config');
-        console.log('🚀 Initial config loaded:', {
-          provider: config.model_provider,
-          style: config.default_style,
-        });
         setCurrentStyle(config.default_style || 'professional');
+        setCustomStyles(config.custom_styles || []);
       } catch (error) {
-        console.error('❌ Failed to load initial config:', error);
+        console.error('Failed to load initial config:', error);
       }
 
       try {
@@ -172,25 +164,18 @@ function App() {
           setError('Accessibility permission required. Please enable Rephraser in System Settings → Privacy & Security → Accessibility, then restart the app.');
         }
       } catch (error) {
-        console.error('❌ Accessibility check failed:', error);
+        console.error('Accessibility check failed:', error);
       }
     };
     
     init();
   }, []);
 
-  // Register hotkey on mount
   useEffect(() => {
     let hotkeyRegistered = '';
-    let isProcessing = false; // Prevent concurrent processing
+    let isProcessing = false;
     
-    // Register hotkey (config is loaded fresh on each hotkey press)
     invoke<any>('load_config').then(async config => {
-      console.log('🔑 Initial config check for hotkey setup:', {
-        provider: config.model_provider,
-      });
-      
-      // Register global hotkey - try multiple formats
       const hotkeyOptions = [
         'CmdOrCtrl+Shift+R',
         'CommandOrControl+Shift+R',
@@ -200,50 +185,32 @@ function App() {
       let registered = false;
       for (const hotkeyString of hotkeyOptions) {
         try {
-          // Try to unregister first in case it's already registered
           try {
             await unregister(hotkeyString);
-            console.log(`🔄 Unregistered existing hotkey: ${hotkeyString}`);
-          } catch (e) {
-            // Ignore error if it wasn't registered
+          } catch (_e) {
+            // Ignore if not registered
           }
           
           await register(hotkeyString, async () => {
-          // Prevent concurrent executions
-          if (isProcessing) {
-            console.log('⚠️ Already processing a request, skipping...');
-            return;
-          }
+          if (isProcessing) return;
           
           isProcessing = true;
-          console.log('🔥 Hotkey triggered!');
           
           try {
-            console.log('🔄 Loading current config + keychain...');
             const [freshConfig, freshApiKey] = await Promise.all([
               invoke<any>('load_config'),
               invoke<string | null>('get_api_key'),
             ]);
-            console.log('✅ Fresh config loaded:', {
-              provider: freshConfig.model_provider,
-              hasApiKey: !!freshApiKey,
-            });
             
-            // CRITICAL: Capture text FIRST (while original app has focus)
-            console.log('📋 Capturing selected text from focused app...');
             const text = await invoke<string>('get_selected_text');
             
             if (!text || text.trim().length === 0) {
               setError('No text selected. Please select some text and try again.');
               setInputText('');
-              console.error('❌ No text was captured');
               isProcessing = false;
               return;
             }
             
-            console.log('✅ Text captured:', text.slice(0, 50) + '...');
-            
-            // NOW show window at cursor position (after capturing text)
             await invoke('show_popup_at_cursor');
             
             setInputText(text);
@@ -251,23 +218,24 @@ function App() {
             
             const currentProvider = freshConfig.model_provider || 'proxy';
             const currentApiKey = freshApiKey || '';
-            
-            console.log('🎯 Using provider from fresh config:', currentProvider);
+            const latestCustomStyles: CustomStyle[] = freshConfig.custom_styles || [];
+            setCustomStyles(latestCustomStyles);
             
             if (currentProvider === 'proxy' || currentApiKey) {
               setIsLoading(true);
               
               try {
+                const customPrompt = latestCustomStyles.find(s => s.id === currentStyle)?.prompt || '';
+
                 const rephrased = await invoke<string>('rephrase_text', {
                   text,
-                  style: currentStyle,
+                  style: BUILTIN_STYLES.includes(currentStyle as any) ? currentStyle : 'professional',
                   provider: currentProvider,
                   apiKey: currentApiKey,
+                  customPrompt: customPrompt || null,
                 });
                 setRephrasedText(rephrased);
-                console.log('✅ Rephrasing complete!');
                 
-                // Auto-scroll to rephrased text section
                 setTimeout(() => {
                   rephrasedSectionRef.current?.scrollIntoView({ 
                     behavior: 'smooth', 
@@ -288,7 +256,7 @@ function App() {
           } catch (e) {
             const errorMessage = typeof e === 'string' ? e : 'Failed to capture text. Make sure accessibility permissions are enabled in System Preferences → Security & Privacy → Accessibility.';
             setError(errorMessage);
-            console.error('❌ Capture error:', e);
+            console.error('Capture error:', e);
           } finally {
             isProcessing = false;
           }
@@ -296,22 +264,20 @@ function App() {
         
         hotkeyRegistered = hotkeyString;
         registered = true;
-        console.log(`✅ Hotkey registered: ${hotkeyString}`);
         break;
       } catch (err) {
-        console.log(`⚠️ Failed to register ${hotkeyString}, trying next...`, err);
+        console.log(`Failed to register ${hotkeyString}, trying next...`, err);
       }
     }
     
     if (!registered) {
-      console.error('❌ Failed to register any hotkey format');
+      console.error('Failed to register any hotkey format');
       setError('Failed to register keyboard shortcut. The shortcut may be in use by another app.');
     }
     }).catch((err) => {
-      console.error('❌ Failed to load config:', err);
+      console.error('Failed to load config:', err);
     });
 
-    // Cleanup: unregister hotkey on unmount
     return () => {
       if (hotkeyRegistered) {
         unregister(hotkeyRegistered).catch((err: unknown) => {
@@ -320,6 +286,11 @@ function App() {
       }
     };
   }, [currentStyle]);
+
+  const allStyles = [
+    ...BUILTIN_STYLES.map(s => ({ id: s, label: s.charAt(0).toUpperCase() + s.slice(1) })),
+    ...customStyles.map(s => ({ id: s.id, label: s.name })),
+  ];
 
   return (
     <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
@@ -341,18 +312,18 @@ function App() {
         </div>
 
         {/* Style Selector */}
-        <div className="flex gap-3 mb-4">
-          {(['professional', 'casual', 'sarcasm'] as StyleMode[]).map((style) => (
+        <div className="flex gap-2 mb-4 flex-wrap">
+          {allStyles.map((style) => (
             <button
-              key={style}
-              onClick={() => setCurrentStyle(style)}
-              className={`flex-1 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
-                currentStyle === style
+              key={style.id}
+              onClick={() => setCurrentStyle(style.id)}
+              className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                currentStyle === style.id
                   ? 'bg-blue-600 text-white shadow-lg transform scale-105'
                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-600'
-              }`}
+              } ${allStyles.length <= 3 ? 'flex-1' : ''}`}
             >
-              {style.charAt(0).toUpperCase() + style.slice(1)}
+              {style.label}
             </button>
           ))}
         </div>
@@ -400,7 +371,7 @@ function App() {
           <div ref={rephrasedSectionRef} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 flex-1 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Rephrased ({currentStyle})
+                Rephrased ({getStyleLabel(currentStyle)})
               </label>
               <button
                 onClick={handleCopy}

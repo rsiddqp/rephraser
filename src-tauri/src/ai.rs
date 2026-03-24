@@ -9,18 +9,27 @@ pub async fn rephrase_text(
     style: &Style,
     provider: &str,
     api_key: &str,
+    custom_prompt: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     match provider.to_lowercase().as_str() {
-        "proxy" => rephrase_with_proxy(text, style).await,
-        "openai" => rephrase_with_openai(text, style, api_key).await,
-        "claude" | "anthropic" => rephrase_with_claude(text, style, api_key).await,
-        "gemini" | "google" => rephrase_with_gemini(text, style, api_key).await,
-        "perplexity" => rephrase_with_perplexity(text, style, api_key).await,
+        "proxy" => rephrase_with_proxy(text, style, custom_prompt).await,
+        "openai" => rephrase_with_openai(text, style, api_key, custom_prompt).await,
+        "claude" | "anthropic" => rephrase_with_claude(text, style, api_key, custom_prompt).await,
+        "gemini" | "google" => rephrase_with_gemini(text, style, api_key, custom_prompt).await,
+        "perplexity" => rephrase_with_perplexity(text, style, api_key, custom_prompt).await,
         _ => Err(format!("Unsupported provider: {}", provider).into()),
     }
 }
 
-fn get_prompt_for_style(text: &str, style: &Style) -> String {
+fn get_prompt_for_style(text: &str, style: &Style, custom_prompt: &str) -> String {
+    if !custom_prompt.is_empty() {
+        let instruction = format!(
+            "{} IMPORTANT: Return ONLY the rephrased text, without any introduction, explanation, or preamble.",
+            custom_prompt
+        );
+        return format!("{}\n\nText: {}", instruction, text);
+    }
+    
     let style_instruction = match style {
         Style::Professional => "Rephrase the following text in a professional, formal tone suitable for business communication. Maintain the core message but improve clarity and professionalism. IMPORTANT: Return ONLY the rephrased text, without any introduction, explanation, or preamble.",
         Style::Casual => "Rephrase the following text in a casual, friendly tone suitable for informal communication. Make it conversational and approachable. IMPORTANT: Return ONLY the rephrased text, without any introduction, explanation, or preamble.",
@@ -84,6 +93,7 @@ fn strip_preamble(text: &str) -> String {
 async fn rephrase_with_proxy(
     text: &str,
     style: &Style,
+    custom_prompt: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     eprintln!("🌐 Using proxy server for rephrasing");
     let client = Client::new();
@@ -95,10 +105,22 @@ async fn rephrase_with_proxy(
     let proxy_url = std::env::var("REPHRASER_PROXY_URL")
         .unwrap_or_else(|_| PROXY_URL_PRIMARY.to_string());
     
-    let style_str = match style {
-        Style::Professional => "professional",
-        Style::Casual => "casual",
-        Style::Sarcasm => "sarcasm",
+    // When custom_prompt is set, embed the instruction into the text and use
+    // "professional" as the style. The proxy wraps text in its own style prompt,
+    // so we prepend an explicit override to ensure the custom instruction takes
+    // precedence over the proxy's default "professional" instruction.
+    let (effective_text, style_str) = if !custom_prompt.is_empty() {
+        let full = format!(
+            "[OVERRIDE: Ignore the style instruction above. Instead follow these instructions: {}]\n\n{}",
+            custom_prompt, text
+        );
+        (full, "professional")
+    } else {
+        (text.to_string(), match style {
+            Style::Professional => "professional",
+            Style::Casual => "casual",
+            Style::Sarcasm => "sarcasm",
+        })
     };
     
     #[derive(Serialize)]
@@ -113,11 +135,11 @@ async fn rephrase_with_proxy(
     }
     
     let request_body = ProxyRequest {
-        text: text.to_string(),
+        text: effective_text,
         style: style_str.to_string(),
     };
     
-    eprintln!("📤 Sending request to proxy: url={}, style={}, text_len={}", proxy_url, style_str, text.len());
+    eprintln!("📤 Sending request to proxy: url={}, style={}, text_len={}", proxy_url, style_str, request_body.text.len());
     
     const CLIENT_ID: &str = "desktop/0.1.0";
     
@@ -169,11 +191,11 @@ async fn rephrase_with_proxy(
     Ok(data.rephrased.trim().to_string())
 }
 
-// OpenAI GPT-4 integration
 async fn rephrase_with_openai(
     text: &str,
     style: &Style,
     api_key: &str,
+    custom_prompt: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     eprintln!("🤖 Using OpenAI for rephrasing");
     let client = Client::new();
@@ -210,7 +232,7 @@ async fn rephrase_with_openai(
             },
             OpenAIMessage {
                 role: "user".to_string(),
-                content: get_prompt_for_style(text, style),
+                content: get_prompt_for_style(text, style, custom_prompt),
             },
         ],
         temperature: 0.7,
@@ -254,11 +276,11 @@ async fn rephrase_with_openai(
     Ok(cleaned)
 }
 
-// Anthropic Claude integration
 async fn rephrase_with_claude(
     text: &str,
     style: &Style,
     api_key: &str,
+    custom_prompt: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     eprintln!("🤖 Using Anthropic Claude for rephrasing");
     let client = Client::new();
@@ -286,20 +308,18 @@ async fn rephrase_with_claude(
         text: String,
     }
     
-    // Use the latest Claude 3.5 Sonnet model
-    // Model names: claude-3-5-sonnet-20241022 (latest as of Nov 2024)
     let request = ClaudeRequest {
-        model: "claude-3-5-sonnet-20241022".to_string(),
-        max_tokens: 2048, // Increased for longer rephrases
+        model: "claude-sonnet-4-6".to_string(),
+        max_tokens: 2048,
         messages: vec![
             ClaudeMessage {
                 role: "user".to_string(),
-                content: get_prompt_for_style(text, style),
+                content: get_prompt_for_style(text, style, custom_prompt),
             },
         ],
     };
     
-    eprintln!("📤 Sending request to Claude API: model=claude-3-5-sonnet-20241022, text_len={}", text.len());
+    eprintln!("📤 Sending request to Claude API: model=claude-sonnet-4-6, text_len={}", text.len());
     
     let response = client
         .post("https://api.anthropic.com/v1/messages")
@@ -338,11 +358,11 @@ async fn rephrase_with_claude(
     Ok(cleaned)
 }
 
-// Google Gemini integration
 async fn rephrase_with_gemini(
     text: &str,
     style: &Style,
     api_key: &str,
+    custom_prompt: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     eprintln!("🤖 Using Google Gemini for rephrasing");
     let client = Client::new();
@@ -377,16 +397,16 @@ async fn rephrase_with_gemini(
             GeminiContent {
                 parts: vec![
                     GeminiPart {
-                        text: get_prompt_for_style(text, style),
+                        text: get_prompt_for_style(text, style, custom_prompt),
                     },
                 ],
             },
         ],
     };
     
-    let url = format!("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={}", api_key);
+    let url = format!("https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key={}", api_key);
     
-    eprintln!("📤 Sending request to Gemini: model=gemini-pro, text_len={}", text.len());
+    eprintln!("📤 Sending request to Gemini: model=gemini-2.5-flash, text_len={}", text.len());
     
     let response = client
         .post(&url)
@@ -424,11 +444,11 @@ async fn rephrase_with_gemini(
     Ok(cleaned)
 }
 
-// Perplexity integration
 async fn rephrase_with_perplexity(
     text: &str,
     style: &Style,
     api_key: &str,
+    custom_prompt: &str,
 ) -> Result<String, Box<dyn std::error::Error>> {
     eprintln!("🤖 Using Perplexity for rephrasing");
     let client = Client::new();
@@ -455,13 +475,12 @@ async fn rephrase_with_perplexity(
         message: PerplexityMessage,
     }
     
-    // Use "sonar" model - tested and verified working
     let request = PerplexityRequest {
         model: "sonar".to_string(),
         messages: vec![
             PerplexityMessage {
                 role: "user".to_string(),
-                content: get_prompt_for_style(text, style),
+                content: get_prompt_for_style(text, style, custom_prompt),
             },
         ],
     };
@@ -469,7 +488,7 @@ async fn rephrase_with_perplexity(
     eprintln!("📤 Sending request to Perplexity: model=sonar, text_len={}", text.len());
     
     let response = client
-        .post("https://api.perplexity.ai/chat/completions")
+        .post("https://api.perplexity.ai/v1/sonar")
         .header("Authorization", format!("Bearer {}", api_key))
         .header("Content-Type", "application/json")
         .json(&request)

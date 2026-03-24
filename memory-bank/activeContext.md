@@ -1,7 +1,7 @@
 # Active Context: Rephraser
 
 ## Current Status
-**Phase**: 🚀 PRODUCTION READINESS - Parts 1, 2, 4 & 5 Implemented
+**Phase**: 🚀 PRODUCTION READINESS - Parts 1, 2, 4 & 5 Implemented + Custom Styles & API Refresh
 **Last Updated**: 2026-03-24
 **Quality**: Production-ready with verified API integrations (Proxy, OpenAI, Claude, Gemini, Perplexity)
 
@@ -25,7 +25,27 @@
 ## Current Task
 Implementing the **Production Readiness Plan** — preparing the app and backend for Heroku deployment, App Store, and subscription model.
 
-### Latest Changes (2026-03-24) — Production Readiness Parts 1 & 2
+### Latest Changes (2026-03-24) — Custom Rephraser Styles & API Updates
+
+#### Custom Rephraser Styles (NEW FEATURE)
+- ✅ **config.rs**: Added `CustomStyle` struct (id, name, prompt) and `custom_styles: Vec<CustomStyle>` to `AppConfig` with `#[serde(default)]` for backward compatibility
+- ✅ **ai.rs**: Updated `rephrase_text` and all provider functions to accept `custom_prompt: &str`; `get_prompt_for_style` uses custom prompt when non-empty, falls back to built-in styles
+- ✅ **lib.rs**: `rephrase_text` command now accepts `custom_prompt: Option<String>` parameter
+- ✅ **Settings.tsx**: Full custom style management UI — add, edit, delete custom styles with name + prompt; custom styles also appear in Default Style dropdown
+- ✅ **App.tsx**: Style selector now renders both built-in (Professional, Casual, Sarcasm) and custom styles dynamically; passes `customPrompt` to backend when custom style selected
+- ✅ **appStore.ts**: Added `CustomStyle` interface and `custom_styles` to `AppConfig`
+- ✅ **backend-proxy/server.js**: Added `custom` to valid styles; passes `custom_prompt` through to OpenAI
+
+#### API Model & Endpoint Updates (DONE)
+- ✅ **Claude**: `claude-3-5-sonnet-20241022` → `claude-sonnet-4-6` (Sonnet 4.6, released Feb 2026)
+- ✅ **Gemini**: `gemini-pro` via `v1beta` → `gemini-2.5-flash` via `v1` (stable, current)
+- ✅ **Perplexity**: Endpoint changed from `/chat/completions` → `/v1/sonar` (new API format)
+- ✅ **OpenAI**: `gpt-4o-mini` retained (still active and cost-effective)
+- ✅ **Settings.tsx**: Updated provider labels to reflect new model names
+- ✅ **Gemini API key link**: Updated from `makersuite.google.com` → `aistudio.google.com`
+- ✅ **anthropic-version header**: Confirmed `2023-06-01` is still current
+
+### Previous Changes (2026-03-24) — Production Readiness Parts 1 & 2
 
 #### Part 1: CSP & Error Handling (DONE)
 - ✅ **CSP fix**: Added Gemini (`generativelanguage.googleapis.com`), Perplexity (`api.perplexity.ai`), Render proxy, and Heroku wildcard (`*.herokuapp.com`) to `connect-src` in `tauri.conf.json`
@@ -220,11 +240,12 @@ Implementing the **Production Readiness Plan** — preparing the app and backend
 - **Alternative**: Electron if Tauri accessibility APIs prove insufficient
 
 ### AI Provider: Universal Multi-Model Support
-- **Supported Models**:
+- **Supported Models** (updated 2026-03-24):
   - OpenAI GPT-4o-mini (fast, cost-effective)
-  - Anthropic Claude 3.5 Sonnet (high quality)
-  - Google Gemini Pro (balanced performance)
-  - Perplexity Llama 3.1 (alternative option)
+  - Anthropic Claude Sonnet 4.6 (high quality, latest)
+  - Google Gemini 2.5 Flash (balanced, stable)
+  - Perplexity Sonar (search-augmented alternative)
+- **Custom Styles**: Users can create their own rephrasing tones with custom prompts
 - **User Control**: Users choose their preferred provider and use their own API keys
 - **Extensible**: Easy to add new providers in the future
 

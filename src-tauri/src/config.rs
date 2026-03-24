@@ -3,6 +3,13 @@ use std::fs;
 use std::path::PathBuf;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CustomStyle {
+    pub id: String,
+    pub name: String,
+    pub prompt: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
     pub hotkey: String,
     pub default_style: String,
@@ -14,6 +21,8 @@ pub struct AppConfig {
     pub theme: String,
     pub start_on_login: bool,
     pub auto_update: bool,
+    #[serde(default)]
+    pub custom_styles: Vec<CustomStyle>,
 }
 
 impl Default for AppConfig {
@@ -26,6 +35,7 @@ impl Default for AppConfig {
             theme: "system".to_string(),
             start_on_login: false,
             auto_update: true,
+            custom_styles: Vec::new(),
         }
     }
 }
