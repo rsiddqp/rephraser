@@ -5,7 +5,6 @@ interface AppConfig {
   hotkey: string;
   default_style: string;
   model_provider: string;
-  api_key?: string;
   theme: string;
   start_on_login: boolean;
   auto_update: boolean;

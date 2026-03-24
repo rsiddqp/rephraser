@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 mod ai;
 mod config;
 mod accessibility;
+mod keychain;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SelectionInfo {
@@ -277,6 +278,27 @@ fn save_config(config: config::AppConfig) -> Result<(), String> {
     config::save(&config).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn get_api_key() -> Result<Option<String>, String> {
+    keychain::get("api_key").map_err(|e| format!("Failed to read API key from keychain: {}", e))
+}
+
+#[tauri::command]
+fn set_api_key(key: String) -> Result<(), String> {
+    if key.trim().is_empty() {
+        return keychain::delete("api_key")
+            .map_err(|e| format!("Failed to remove API key: {}", e));
+    }
+    keychain::set("api_key", key.trim())
+        .map_err(|e| format!("Failed to save API key to keychain: {}", e))
+}
+
+#[tauri::command]
+fn delete_api_key() -> Result<(), String> {
+    keychain::delete("api_key")
+        .map_err(|e| format!("Failed to remove API key: {}", e))
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -293,6 +315,9 @@ pub fn run() {
             hide_popup,
             load_config,
             save_config,
+            get_api_key,
+            set_api_key,
+            delete_api_key,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
@@ -302,9 +327,30 @@ pub fn run() {
             match config::load() {
                 Ok(cfg) => {
                     println!("✅ Config loaded: provider={}", cfg.model_provider);
+                    
+                    // Migrate plaintext API key from config.json to keychain
+                    if let Some(ref key) = cfg.api_key {
+                        if !key.trim().is_empty() {
+                            println!("🔐 Migrating API key from config.json to keychain...");
+                            match keychain::set("api_key", key.trim()) {
+                                Ok(()) => {
+                                    // Re-save config to strip the api_key field from JSON
+                                    let mut cleaned = cfg.clone();
+                                    cleaned.api_key = None;
+                                    if let Err(e) = config::save(&cleaned) {
+                                        eprintln!("⚠️  Failed to clean api_key from config: {}", e);
+                                    } else {
+                                        println!("✅ API key migrated to keychain and removed from config.json");
+                                    }
+                                }
+                                Err(e) => {
+                                    eprintln!("⚠️  Keychain migration failed (key stays in config.json): {}", e);
+                                }
+                            }
+                        }
+                    }
                 }
                 Err(_) => {
-                    // No config exists, create default one
                     let default_config = config::AppConfig::default();
                     if let Err(e) = config::save(&default_config) {
                         eprintln!("⚠️  Failed to save default config: {}", e);
@@ -312,7 +358,6 @@ pub fn run() {
                         println!("✅ Created default config with proxy provider");
                     }
                     
-                    // Try to load bundled config if it exists (for development)
                     if let Some(resource_path) = app.path().resource_dir().ok() {
                         let bundled_config = resource_path.join("default-config.json");
                         if bundled_config.exists() {

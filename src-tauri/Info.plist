@@ -6,6 +6,12 @@
     <string>Rephraser needs permission to capture selected text from other applications to provide instant text rephrasing.</string>
     <key>NSSystemAdministrationUsageDescription</key>
     <string>Rephraser needs accessibility permissions to automatically capture selected text when you press the keyboard shortcut.</string>
+    <key>NSAccessibilityUsageDescription</key>
+    <string>Rephraser uses accessibility to detect and capture your selected text when you press the global keyboard shortcut, so it can rephrase it instantly without manual copying.</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>10.15</string>
+    <key>CFBundleShortVersionString</key>
+    <string>0.1.0</string>
 </dict>
 </plist>
 

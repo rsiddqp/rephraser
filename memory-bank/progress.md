@@ -14,8 +14,8 @@
 | 1 | Fix CSP + enhance error messages | ✅ Done |
 | 2 | Backend Heroku migration + hardening | ✅ Done |
 | 3 | Subscription model (Stripe, auth, usage) | ⬜ Not started |
-| 4 | macOS App Store preparation | ⬜ Not started |
-| 5 | Security hardening (Keychain, cert pinning) | ⬜ Not started |
+| 4 | macOS App Store preparation | ✅ Done |
+| 5 | Security hardening (Keychain storage) | ✅ Done |
 | 6 | Performance optimization | ⬜ Not started |
 
 ### Phase 1: Foundation (Week 1) - ✅ COMPLETED

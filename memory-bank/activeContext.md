@@ -1,7 +1,7 @@
 # Active Context: Rephraser
 
 ## Current Status
-**Phase**: 🚀 PRODUCTION READINESS - Parts 1 & 2 Implemented
+**Phase**: 🚀 PRODUCTION READINESS - Parts 1, 2, 4 & 5 Implemented
 **Last Updated**: 2026-03-24
 **Quality**: Production-ready with verified API integrations (Proxy, OpenAI, Claude, Gemini, Perplexity)
 
@@ -43,6 +43,22 @@ Implementing the **Production Readiness Plan** — preparing the app and backend
   - 404 catch-all and global error handler
 - ✅ **Redis-backed rate limiting**: Uses `ioredis` when `REDIS_URL` is set; automatic fallback to in-memory Map; periodic cleanup of stale entries
 - ✅ **Proxy failover in ai.rs**: Primary URL = Heroku, fallback = Render; overridable via `REPHRASER_PROXY_URL` env var
+
+#### Part 5: Security Hardening (DONE)
+- ✅ **macOS Keychain integration**: New `keychain.rs` module using `security-framework` crate
+- ✅ **Windows Credential Manager**: Platform-specific implementation via `windows` crate
+- ✅ **API keys removed from config.json**: `api_key` field marked `skip_serializing`; only read during migration
+- ✅ **Automatic migration**: On startup, any plaintext key in config.json is moved to Keychain and stripped from JSON
+- ✅ **New Tauri commands**: `get_api_key`, `set_api_key`, `delete_api_key` for frontend
+- ✅ **Frontend updated**: Settings.tsx and App.tsx use keychain commands instead of config.api_key
+- ✅ **Client identifier**: `X-Rephraser-Client: desktop/0.1.0` header added to proxy requests
+
+#### Part 4: macOS App Store Preparation (DONE)
+- ✅ **entitlements.plist**: App Sandbox, network client, JIT, unsigned executable memory
+- ✅ **tauri.conf.json**: References entitlements.plist for macOS bundle
+- ✅ **Info.plist**: Added `NSAccessibilityUsageDescription`, `LSMinimumSystemVersion`, `CFBundleShortVersionString`
+- ✅ **build-appstore.sh**: Full production build script — universal binary, codesign with entitlements, notarization via `notarytool`, stapling
+- ✅ **Universal binary**: Builds both arm64 + x86_64 via `--target universal-apple-darwin`
 
 ### Previous Enhancements (2025-11-21)
 - ✅ Hybrid approach: Proxy server as DEFAULT + optional custom API keys

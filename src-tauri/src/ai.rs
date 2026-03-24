@@ -119,9 +119,12 @@ async fn rephrase_with_proxy(
     
     eprintln!("📤 Sending request to proxy: url={}, style={}, text_len={}", proxy_url, style_str, text.len());
     
+    const CLIENT_ID: &str = "desktop/0.1.0";
+    
     let response = client
         .post(&proxy_url)
         .header("Content-Type", "application/json")
+        .header("X-Rephraser-Client", CLIENT_ID)
         .json(&request_body)
         .timeout(std::time::Duration::from_secs(60))
         .send()
@@ -135,6 +138,7 @@ async fn rephrase_with_proxy(
             client
                 .post(PROXY_URL_FALLBACK)
                 .header("Content-Type", "application/json")
+                .header("X-Rephraser-Client", CLIENT_ID)
                 .json(&request_body)
                 .timeout(std::time::Duration::from_secs(60))
                 .send()

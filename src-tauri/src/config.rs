@@ -1,4 +1,3 @@
-// Configuration management
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
@@ -7,7 +6,10 @@ use std::path::PathBuf;
 pub struct AppConfig {
     pub hotkey: String,
     pub default_style: String,
-    pub model_provider: String, // openai, claude, gemini, perplexity
+    pub model_provider: String,
+    /// Legacy field — only read during migration, never written back to disk.
+    /// API keys are now stored in the OS keychain.
+    #[serde(default, skip_serializing)]
     pub api_key: Option<String>,
     pub theme: String,
     pub start_on_login: bool,
@@ -19,8 +21,8 @@ impl Default for AppConfig {
         Self {
             hotkey: "CommandOrControl+Shift+R".to_string(),
             default_style: "professional".to_string(),
-            model_provider: "proxy".to_string(), // Default to proxy server (uses your API key)
-            api_key: None, // Optional: user can provide their own API key
+            model_provider: "proxy".to_string(),
+            api_key: None,
             theme: "system".to_string(),
             start_on_login: false,
             auto_update: true,

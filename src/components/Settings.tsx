@@ -14,17 +14,22 @@ const Settings = ({ onClose }: SettingsProps) => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load config when modal opens
+  // Load config + keychain API key when modal opens
   useEffect(() => {
     const initConfig = async () => {
-      console.log('🔵 Settings opened, loading config...');
+      console.log('🔵 Settings opened, loading config + keychain...');
       try {
-        // Load config directly to ensure we have it
-        const loadedConfig = await invoke<any>('load_config');
-        console.log('✅ Config loaded:', { ...loadedConfig, api_key: loadedConfig.api_key ? '***' : 'none' });
+        const [loadedConfig, storedKey] = await Promise.all([
+          invoke<any>('load_config'),
+          invoke<string | null>('get_api_key'),
+        ]);
+        console.log('✅ Config loaded:', {
+          provider: loadedConfig.model_provider,
+          hasKeychainKey: !!storedKey,
+        });
         
         setConfig(loadedConfig);
-        setApiKey(loadedConfig.api_key || '');
+        setApiKey(storedKey || '');
         setModelProvider(loadedConfig.model_provider || 'proxy');
         setLoading(false);
       } catch (error) {
@@ -38,9 +43,7 @@ const Settings = ({ onClose }: SettingsProps) => {
 
   useEffect(() => {
     if (config) {
-      console.log('🔵 Config updated in store:', { ...config, api_key: config.api_key ? '***' : 'none' });
-      setApiKey(config.api_key || '');
-      setModelProvider(config.model_provider || 'proxy'); // Default to proxy
+      setModelProvider(config.model_provider || 'proxy');
     }
   }, [config]);
 
@@ -65,27 +68,26 @@ const Settings = ({ onClose }: SettingsProps) => {
     try {
       const newConfig = {
         ...config,
-        api_key: apiKey.trim(), // Trim any whitespace
         model_provider: modelProvider,
       };
+      // api_key is no longer stored in config.json — remove it before saving
+      delete (newConfig as any).api_key;
       
-      console.log('📤 Calling save_config with:', { 
-        ...newConfig, 
-        api_key: newConfig.api_key ? '***' : 'empty' 
-      });
+      console.log('📤 Saving config (no api_key) + keychain...');
       
-      await invoke('save_config', { config: newConfig });
-      console.log('✅ Config saved successfully');
+      await Promise.all([
+        invoke('save_config', { config: newConfig }),
+        invoke('set_api_key', { key: apiKey.trim() }),
+      ]);
+      console.log('✅ Config + keychain saved');
       
       setConfig(newConfig);
-      console.log('✅ State updated, closing modal');
       onClose();
     } catch (error) {
-      console.error('❌ Failed to save config:', error);
+      console.error('❌ Failed to save settings:', error);
       alert(`Failed to save settings: ${error}`);
     } finally {
       setSaving(false);
-      console.log('🔵 Save complete');
     }
   };
 
