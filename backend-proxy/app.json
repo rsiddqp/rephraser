@@ -1,0 +1,43 @@
+{
+  "name": "rephraser-proxy",
+  "description": "Secure proxy server for the Rephraser desktop app — routes AI requests through a server-side API key",
+  "repository": "https://github.com/rsiddqp/rephraser",
+  "keywords": ["node", "express", "openai", "proxy"],
+  "stack": "heroku-24",
+  "env": {
+    "OPENAI_API_KEY": {
+      "description": "Your OpenAI API key (starts with sk-)",
+      "required": true
+    },
+    "NODE_ENV": {
+      "description": "Environment mode",
+      "value": "production"
+    },
+    "RATE_LIMIT_WINDOW": {
+      "description": "Rate limit window in milliseconds",
+      "value": "60000"
+    },
+    "MAX_REQUESTS_PER_WINDOW": {
+      "description": "Max requests per IP per rate limit window",
+      "value": "20"
+    },
+    "ALLOWED_ORIGINS": {
+      "description": "Comma-separated list of allowed CORS origins (blank = allow all)",
+      "required": false
+    },
+    "REDIS_URL": {
+      "description": "Redis URL for distributed rate limiting (optional — falls back to in-memory)",
+      "required": false
+    }
+  },
+  "addons": [],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "buildpacks": [
+    { "url": "heroku/nodejs" }
+  ]
+}

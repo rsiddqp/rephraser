@@ -80,7 +80,7 @@ fn strip_preamble(text: &str) -> String {
     result.trim().to_string()
 }
 
-// Proxy server integration (default - uses your API key)
+// Proxy server integration (default - uses server-side API key)
 async fn rephrase_with_proxy(
     text: &str,
     style: &Style,
@@ -88,15 +88,18 @@ async fn rephrase_with_proxy(
     eprintln!("🌐 Using proxy server for rephrasing");
     let client = Client::new();
     
-    const PROXY_URL: &str = "https://rephraser-9ur5.onrender.com/api/rephrase";
+    // Try Heroku first, fall back to Render
+    const PROXY_URL_PRIMARY: &str = "https://rephraser-technology-21cddf6fbfbc.herokuapp.com/api/rephrase";
+    const PROXY_URL_FALLBACK: &str = "https://rephraser-9ur5.onrender.com/api/rephrase";
+    
+    let proxy_url = std::env::var("REPHRASER_PROXY_URL")
+        .unwrap_or_else(|_| PROXY_URL_PRIMARY.to_string());
     
     let style_str = match style {
         Style::Professional => "professional",
         Style::Casual => "casual",
         Style::Sarcasm => "sarcasm",
     };
-    
-    eprintln!("📤 Sending request to proxy: style={}, text_len={}", style_str, text.len());
     
     #[derive(Serialize)]
     struct ProxyRequest {
@@ -109,22 +112,43 @@ async fn rephrase_with_proxy(
         rephrased: String,
     }
     
-    let request = ProxyRequest {
+    let request_body = ProxyRequest {
         text: text.to_string(),
         style: style_str.to_string(),
     };
     
+    eprintln!("📤 Sending request to proxy: url={}, style={}, text_len={}", proxy_url, style_str, text.len());
+    
     let response = client
-        .post(PROXY_URL)
+        .post(&proxy_url)
         .header("Content-Type", "application/json")
-        .json(&request)
+        .json(&request_body)
         .timeout(std::time::Duration::from_secs(60))
         .send()
-        .await
-        .map_err(|e| {
+        .await;
+    
+    // If primary fails with a connection error, try fallback
+    let response = match response {
+        Ok(r) => r,
+        Err(e) if e.is_connect() && proxy_url != PROXY_URL_FALLBACK => {
+            eprintln!("⚠️  Primary proxy unreachable, trying fallback: {}", PROXY_URL_FALLBACK);
+            client
+                .post(PROXY_URL_FALLBACK)
+                .header("Content-Type", "application/json")
+                .json(&request_body)
+                .timeout(std::time::Duration::from_secs(60))
+                .send()
+                .await
+                .map_err(|e| {
+                    eprintln!("❌ Fallback proxy also failed: {:?}", e);
+                    handle_request_error(e)
+                })?
+        }
+        Err(e) => {
             eprintln!("❌ Proxy request failed: {:?}", e);
-            handle_request_error(e)
-        })?;
+            return Err(handle_request_error(e).into());
+        }
+    };
     
     let status = response.status();
     eprintln!("📥 Proxy response status: {}", status);
@@ -479,9 +503,20 @@ async fn rephrase_with_perplexity(
 // Helper functions for error handling
 fn handle_request_error(e: reqwest::Error) -> String {
     if e.is_timeout() {
-        "Request timed out. Please check your internet connection or try again.".to_string()
+        "Request timed out. The AI service may be slow — please try again.".to_string()
     } else if e.is_connect() {
-        "Cannot connect to API server. Please check your internet connection.".to_string()
+        format!(
+            "Cannot connect to API server. This may be caused by a network issue \
+             or the app's security policy blocking the request. \
+             Please check your internet connection. (Details: {})",
+            e
+        )
+    } else if e.is_request() {
+        format!(
+            "Failed to send request. The API domain may not be allowed by the app's \
+             security policy. Please update the app or contact support. (Details: {})",
+            e
+        )
     } else {
         format!("Network error: {}", e)
     }
@@ -489,10 +524,37 @@ fn handle_request_error(e: reqwest::Error) -> String {
 
 fn handle_api_error(status: u16, provider: &str) -> String {
     match status {
-        401 => format!("{} API key is invalid. Please check your API key in Settings.", provider),
-        429 => format!("{} rate limit exceeded. Please wait a moment and try again.", provider),
-        500..=599 => format!("{} service is temporarily unavailable. Please try again later.", provider),
-        _ => format!("{} API error (status {}). Please try again.", provider, status),
+        400 => format!(
+            "{}: Bad request. The text may be too long or contain unsupported characters.",
+            provider
+        ),
+        401 => format!(
+            "{}: Invalid API key. Please verify your key in Settings and ensure it has not expired.",
+            provider
+        ),
+        403 => format!(
+            "{}: Access denied. Your API key may lack the required permissions, \
+             or the model may not be available on your plan.",
+            provider
+        ),
+        404 => format!(
+            "{}: Model or endpoint not found. The model may have been deprecated — \
+             please check for app updates.",
+            provider
+        ),
+        429 => format!(
+            "{}: Rate limit exceeded. Please wait a moment and try again, \
+             or check your API plan's usage limits.",
+            provider
+        ),
+        500..=599 => format!(
+            "{}: Service temporarily unavailable (HTTP {}). Please try again in a few seconds.",
+            provider, status
+        ),
+        _ => format!(
+            "{}: Unexpected error (HTTP {}). Please try again or check your API key.",
+            provider, status
+        ),
     }
 }
 

@@ -1,8 +1,8 @@
 # Active Context: Rephraser
 
 ## Current Status
-**Phase**: ✅ PRODUCTION - ROBUST MULTI-MODEL IMPLEMENTATION
-**Last Updated**: 2025-11-21 (Evening)
+**Phase**: 🚀 PRODUCTION READINESS - Parts 1 & 2 Implemented
+**Last Updated**: 2026-03-24
 **Quality**: Production-ready with verified API integrations (Proxy, OpenAI, Claude, Gemini, Perplexity)
 
 **🌐 Public URLs**:
@@ -23,24 +23,31 @@
 **Status**: ✅ Ready for public use - share the landing page URL!
 
 ## Current Task
-The application has been enhanced with **universal multi-model LLM support**. Users can now choose from multiple AI providers and use their own API keys. The workflow remains seamless: SELECT text → hit Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows) → get revised text. **No manual copying required!**
+Implementing the **Production Readiness Plan** — preparing the app and backend for Heroku deployment, App Store, and subscription model.
 
-### Latest Enhancements (2025-11-21)
-- ✅ **Hybrid approach**: Proxy server as DEFAULT + optional custom API keys
-- ✅ **Robust config loading**: Fresh config loaded on every rephrase (no stale state)
-- ✅ **Verified API implementations**:
-  - Proxy Server: `https://rephraser-9ur5.onrender.com` (default, tested ✅)
-  - OpenAI: `gpt-4o-mini` model (tested ✅)
-  - Anthropic: `claude-3-5-sonnet-20241022` model with proper headers
-  - Google: `gemini-pro` model
-  - Perplexity: `sonar` model (tested ✅, fixed from invalid model name)
-- ✅ **Preamble stripping**: All providers strip unwanted intro text ("Certainly. Here is...")
-- ✅ **Comprehensive logging**: All APIs log: 🤖→📤→📥→✅→✂️
-- ✅ **Settings UI**: Only shows API key field when needed, green indicator for proxy mode
-- ✅ **Hotkey display**: Corrected to "Cmd + Shift + R" visual badges
-- ✅ **Code cleanup**: Removed Popup.tsx (unused), cleaned appStore (removed 152 lines)
-- ✅ **Documentation**: Removed all temporary markdown files
-- ✅ **Keyboard shortcut**: Auto-unregisters before re-registering (fixes conflicts)
+### Latest Changes (2026-03-24) — Production Readiness Parts 1 & 2
+
+#### Part 1: CSP & Error Handling (DONE)
+- ✅ **CSP fix**: Added Gemini (`generativelanguage.googleapis.com`), Perplexity (`api.perplexity.ai`), Render proxy, and Heroku wildcard (`*.herokuapp.com`) to `connect-src` in `tauri.conf.json`
+- ✅ **Enhanced error messages in ai.rs**: Added HTTP 400/403/404 handling, CSP-hint messages on connection failures, provider-specific guidance
+
+#### Part 2: Backend Migration to Heroku (DONE)
+- ✅ **Heroku deployment files**: `Procfile`, `app.json` (deploy button), updated `package.json` v2.0.0
+- ✅ **Production-hardened server.js**:
+  - `helmet` for security headers
+  - `morgan` for structured request logging (skips /health in prod)
+  - `trust proxy` for correct IP behind load balancer
+  - Configurable CORS via `ALLOWED_ORIGINS` env var
+  - Extracted validation middleware (`validateRephraseBody`)
+  - Enhanced health check with uptime, Redis status, version
+  - 404 catch-all and global error handler
+- ✅ **Redis-backed rate limiting**: Uses `ioredis` when `REDIS_URL` is set; automatic fallback to in-memory Map; periodic cleanup of stale entries
+- ✅ **Proxy failover in ai.rs**: Primary URL = Heroku, fallback = Render; overridable via `REPHRASER_PROXY_URL` env var
+
+### Previous Enhancements (2025-11-21)
+- ✅ Hybrid approach: Proxy server as DEFAULT + optional custom API keys
+- ✅ Verified API implementations (OpenAI, Claude, Gemini, Perplexity)
+- ✅ Preamble stripping, comprehensive logging, Settings UI, hotkey display
 
 ## Recent Developments
 1. **Memory Bank Created**: Complete documentation structure established
