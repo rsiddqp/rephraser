@@ -348,7 +348,7 @@ pub fn run() {
             delete_api_key,
             check_accessibility,
         ])
-        .setup(|_app| {
+        .setup(|app| {
             #[cfg(debug_assertions)]
             println!("Rephraser started successfully in development mode!");
             
