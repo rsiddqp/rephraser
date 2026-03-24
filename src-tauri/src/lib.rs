@@ -303,19 +303,17 @@ fn delete_api_key() -> Result<(), String> {
 fn check_accessibility() -> Result<bool, String> {
     #[cfg(target_os = "macos")]
     {
-        // AXIsProcessTrustedWithOptions will show the system prompt if not trusted
-        use cocoa::base::{id, nil, YES};
+        extern "C" {
+            fn AXIsProcessTrustedWithOptions(options: cocoa::base::id) -> bool;
+        }
+        use cocoa::base::{id, nil};
+        use cocoa::foundation::NSString;
         use objc::{class, msg_send, sel, sel_impl};
         unsafe {
-            let key = cocoa::foundation::NSString::alloc(nil);
-            let key = cocoa::foundation::NSString::init_str(key, "AXTrustedCheckOptionPrompt");
-            let val = YES; // triggers the system prompt dialog
+            let key: id = NSString::alloc(nil);
+            let key: id = NSString::init_str(key, "AXTrustedCheckOptionPrompt");
+            let val: id = msg_send![class!(NSNumber), numberWithBool:true];
             let opts: id = msg_send![class!(NSDictionary), dictionaryWithObject:val forKey:key];
-            
-            // Link to ApplicationServices framework function
-            extern "C" {
-                fn AXIsProcessTrustedWithOptions(options: id) -> bool;
-            }
             let trusted = AXIsProcessTrustedWithOptions(opts);
             eprintln!("🔐 Accessibility trusted: {}", trusted);
             Ok(trusted)
@@ -355,16 +353,17 @@ pub fn run() {
             // Prompt for accessibility permissions on startup (macOS)
             #[cfg(target_os = "macos")]
             {
-                use cocoa::base::{id, nil, YES};
+                extern "C" {
+                    fn AXIsProcessTrustedWithOptions(options: cocoa::base::id) -> bool;
+                }
+                use cocoa::base::{id, nil};
+                use cocoa::foundation::NSString;
                 use objc::{class, msg_send, sel, sel_impl};
                 unsafe {
-                    let key = cocoa::foundation::NSString::alloc(nil);
-                    let key = cocoa::foundation::NSString::init_str(key, "AXTrustedCheckOptionPrompt");
-                    let val = YES;
+                    let key: id = NSString::alloc(nil);
+                    let key: id = NSString::init_str(key, "AXTrustedCheckOptionPrompt");
+                    let val: id = msg_send![class!(NSNumber), numberWithBool:true];
                     let opts: id = msg_send![class!(NSDictionary), dictionaryWithObject:val forKey:key];
-                    extern "C" {
-                        fn AXIsProcessTrustedWithOptions(options: id) -> bool;
-                    }
                     let trusted = AXIsProcessTrustedWithOptions(opts);
                     if trusted {
                         println!("✅ Accessibility permission granted");
